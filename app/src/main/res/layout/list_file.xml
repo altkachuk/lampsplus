@@ -7,9 +7,10 @@
 
     <ImageView
         android:id="@+id/lampView"
-        android:layout_width="wrap_content"
+        android:layout_width="80dp"
         android:layout_height="80dp"
-        android:src="@mipmap/lamp"/>
+        android:src="@mipmap/lamp"
+        android:background="@color/colorWhite"/>
 
     <ImageView
         android:id="@+id/folderView"

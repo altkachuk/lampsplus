@@ -1,14 +1,10 @@
 package com.zugara.atproj.lampsplus.presenters;
 
 import com.zugara.atproj.lampsplus.model.FileItem;
-import com.zugara.atproj.lampsplus.utils.FileManagerListener;
-import com.zugara.atproj.lampsplus.utils.FileUtil;
-import com.zugara.atproj.lampsplus.utils.IFileManager;
+import com.zugara.atproj.lampsplus.filemanager.FileManagerListener;
+import com.zugara.atproj.lampsplus.filemanager.IFileManager;
 import com.zugara.atproj.lampsplus.views.LampsView;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -45,6 +41,6 @@ public class LampsPresenter {
     }
 
     public void selectFile(int position) {
-        fileManager.goFolder(position);
+        fileManager.goInside(position);
     }
 }

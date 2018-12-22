@@ -1,8 +1,11 @@
-package com.zugara.atproj.lampsplus.utils;
+package com.zugara.atproj.lampsplus.filemanager;
 
 import android.util.Log;
 
+import com.zugara.atproj.lampsplus.filemanager.FileManagerListener;
+import com.zugara.atproj.lampsplus.filemanager.IFileManager;
 import com.zugara.atproj.lampsplus.model.FileItem;
+import com.zugara.atproj.lampsplus.utils.FileUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -53,7 +56,7 @@ public class LocalFileManager implements IFileManager {
     }
 
     @Override
-    public void goFolder(int position) {
+    public void goInside(int position) {
         File file = fileList.get(position);
         if (file.isDirectory()) {
             breadcrumpsList.add(file);

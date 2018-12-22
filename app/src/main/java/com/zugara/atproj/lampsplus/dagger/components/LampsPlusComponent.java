@@ -4,6 +4,7 @@ import com.zugara.atproj.lampsplus.dagger.scope.RuntimeScope;
 import com.zugara.atproj.lampsplus.ui.activities.MainActivity;
 import com.zugara.atproj.lampsplus.ui.activities.SplashActivity;
 import com.zugara.atproj.lampsplus.ui.fragments.CanvasFragment;
+import com.zugara.atproj.lampsplus.ui.fragments.CreateSessionFragment;
 import com.zugara.atproj.lampsplus.ui.fragments.LampsFragment;
 import com.zugara.atproj.lampsplus.ui.viewholders.FileViewHolder;
 
@@ -19,7 +20,8 @@ import dagger.Component;
 @Component(dependencies = {
         ApplicationComponent.class,
         PicassoComponent.class,
-        FileManagerComponent.class
+        FileManagerComponent.class,
+        RuntimeComponent.class
 })
 
 @Singleton
@@ -29,6 +31,7 @@ public interface LampsPlusComponent {
     void inject(MainActivity mainActivity);
 
     // fragments
+    void inject(CreateSessionFragment createSessionFragment);
     void inject(CanvasFragment canvasFragment);
     void inject(LampsFragment lampsFragment);
 

@@ -8,4 +8,5 @@ import android.graphics.Matrix;
 
 public interface IDraggable {
     void setMatrix(Matrix matrix);
+    IDraggable clone();
 }

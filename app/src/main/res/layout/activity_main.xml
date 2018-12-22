@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.zugara.atproj.lampsplus.ui.activities.MainActivity">
-
-    <com.zugara.atproj.lampsplus.ui.view.DraggableImage
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@mipmap/lamp"
-        android:scaleType="matrix"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,15 +15,21 @@
             android:name="com.zugara.atproj.lampsplus.ui.fragments.CanvasFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.4"/>
+            android:layout_weight="0.3"/>
 
         <fragment
             android:id="@+id/lampsFragment"
             android:name="com.zugara.atproj.lampsplus.ui.fragments.LampsFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.6"/>
+            android:layout_weight="0.7"/>
 
     </LinearLayout>
+
+    <fragment
+        android:id="@+id/createSessionFragment"
+        android:name="com.zugara.atproj.lampsplus.ui.fragments.CreateSessionFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </android.support.constraint.ConstraintLayout>

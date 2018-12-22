@@ -7,4 +7,6 @@ package com.zugara.atproj.lampsplus.views;
 public interface LoadingView {
     void showPreloader();
     void hidePreloader();
+    void showErrorMessage(String message);
+    void showErrorMessage(int messageResId);
 }

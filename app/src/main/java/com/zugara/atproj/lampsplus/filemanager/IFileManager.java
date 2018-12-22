@@ -1,6 +1,6 @@
-package com.zugara.atproj.lampsplus.utils;
+package com.zugara.atproj.lampsplus.filemanager;
 
-import java.util.List;
+import com.zugara.atproj.lampsplus.filemanager.FileManagerListener;
 
 /**
  * Created by andre on 17-Dec-18.
@@ -10,6 +10,6 @@ public interface IFileManager {
     void init();
     void addListener(FileManagerListener listener);
     void removeListener(FileManagerListener listener);
-    void goFolder(int position);
+    void goInside(int position);
     void goBack();
 }

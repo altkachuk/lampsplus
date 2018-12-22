@@ -11,14 +11,17 @@ import com.zugara.atproj.lampsplus.dagger.components.DaggerFileManagerComponent;
 import com.zugara.atproj.lampsplus.dagger.components.DaggerLampsPlusComponent;
 import com.zugara.atproj.lampsplus.dagger.components.DaggerOkHttpClientComponent;
 import com.zugara.atproj.lampsplus.dagger.components.DaggerPicassoComponent;
+import com.zugara.atproj.lampsplus.dagger.components.DaggerRuntimeComponent;
 import com.zugara.atproj.lampsplus.dagger.components.FileManagerComponent;
 import com.zugara.atproj.lampsplus.dagger.components.LampsPlusComponent;
 import com.zugara.atproj.lampsplus.dagger.components.OkHttpClientComponent;
 import com.zugara.atproj.lampsplus.dagger.components.PicassoComponent;
+import com.zugara.atproj.lampsplus.dagger.components.RuntimeComponent;
 import com.zugara.atproj.lampsplus.dagger.modules.ApplicationModule;
 import com.zugara.atproj.lampsplus.dagger.modules.FileManagerModule;
 import com.zugara.atproj.lampsplus.dagger.modules.OkHttpClientModule;
 import com.zugara.atproj.lampsplus.dagger.modules.PicassoModule;
+import com.zugara.atproj.lampsplus.dagger.modules.RuntimeModule;
 import com.zugara.atproj.lampsplus.utils.ClientUtil;
 
 import java.lang.reflect.Method;
@@ -35,6 +38,7 @@ public class App extends Application {
     OkHttpClientComponent okHttpClientComponent;
     PicassoComponent picassoComponent;
     FileManagerComponent fileManagerComponent;
+    RuntimeComponent runtimeComponent;
 
     @Override
     public void onCreate() {
@@ -60,6 +64,10 @@ public class App extends Application {
         fileManagerComponent = DaggerFileManagerComponent.builder()
                 .fileManagerModule(new FileManagerModule())
                 .build();
+
+        runtimeComponent = DaggerRuntimeComponent.builder()
+                .runtimeModule(new RuntimeModule())
+                .build();
     }
 
     public void inject(Object object) {
@@ -67,6 +75,7 @@ public class App extends Application {
                 .applicationComponent(applicationComponent)
                 .picassoComponent(picassoComponent)
                 .fileManagerComponent(fileManagerComponent)
+                .runtimeComponent(runtimeComponent)
                 .build();
 
         try {

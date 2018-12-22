@@ -4,4 +4,16 @@
     <string name="upload">Upload</string>
     <string name="copy">Copy</string>
     <string name="delete">Delete</string>
+    <string name="complete">Complete</string>
+    <string name="continue_string">Continue</string>
+    <string name="download">Download</string>
+    <string name="session_name">Session Name</string>
+    <string name="name_has_illegal_characters">Name has illegal characters!</string>
+    <string name="open">Open</string>
+    <string name="send">Send</string>
+    <string name="finish">Finish</string>
+    <string name="loading">Loading...</string>
+    <string name="something_is_wrong">Something is wrong. Please try again.</string>
+    <string name="email_subject">Email subject</string>
+    <string name="email_message">Email message</string>
 </resources>

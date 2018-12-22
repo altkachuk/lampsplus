@@ -1,7 +1,7 @@
 package com.zugara.atproj.lampsplus.dagger.modules;
 
-import com.zugara.atproj.lampsplus.utils.IFileManager;
-import com.zugara.atproj.lampsplus.utils.LocalFileManager;
+import com.zugara.atproj.lampsplus.filemanager.IFileManager;
+import com.zugara.atproj.lampsplus.filemanager.LocalFileManager;
 
 import dagger.Module;
 import dagger.Provides;

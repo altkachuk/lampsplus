@@ -17,10 +17,9 @@ import com.zugara.atproj.lampsplus.ui.adapters.FileAdapter;
 import com.zugara.atproj.lampsplus.ui.decorator.DividerItemDecoration;
 import com.zugara.atproj.lampsplus.ui.fragments.base.BaseFragment;
 import com.zugara.atproj.lampsplus.ui.listener.RecyclerItemClickListener;
-import com.zugara.atproj.lampsplus.utils.IFileManager;
+import com.zugara.atproj.lampsplus.filemanager.IFileManager;
 import com.zugara.atproj.lampsplus.views.LampsView;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +50,9 @@ public class LampsFragment extends BaseFragment implements LampsView {
 
     private FileAdapter fileAdapter;
 
+    //-------------------------------------------------------------
+    // Lifecycle override
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_lamps, container, false);
@@ -64,22 +66,16 @@ public class LampsFragment extends BaseFragment implements LampsView {
         lampsPresenter = new LampsPresenter(this, fileManager);
     }
 
-    private void initRecyclerView() {
-        // optimization
-        fileRecyclerView.setHasFixedSize(true);
-        // set layout
-        fileRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
-        fileRecyclerView.setAdapter(fileAdapter);
+    //-------------------------------------------------------------
+    // Handlers
 
-        fileRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity().getApplicationContext(), R.drawable.divider_file));
-
-        fileRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity().getApplicationContext(), new RecyclerItemClickListener.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                lampsPresenter.selectFile(position);
-            }
-        }));
+    @OnClick(R.id.backButton)
+    public void onClickBackButton() {
+        lampsPresenter.back();
     }
+
+    //-------------------------------------------------------------
+    // LampsView methods
 
     @Override
     public void setDataProvider(List<FileItem> fileList) {
@@ -103,8 +99,23 @@ public class LampsFragment extends BaseFragment implements LampsView {
         backButton.setEnabled(enable);
     }
 
-    @OnClick(R.id.backButton)
-    public void onClickBackButton() {
-        lampsPresenter.back();
+    //-------------------------------------------------------------
+    // Private methods
+
+    private void initRecyclerView() {
+        // optimization
+        fileRecyclerView.setHasFixedSize(true);
+        // set layout
+        fileRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+        fileRecyclerView.setAdapter(fileAdapter);
+
+        fileRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity().getApplicationContext(), R.drawable.divider_file));
+
+        fileRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity().getApplicationContext(), new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                lampsPresenter.selectFile(position);
+            }
+        }));
     }
 }
