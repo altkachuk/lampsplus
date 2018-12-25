@@ -13,7 +13,7 @@ import java.io.File;
  * Created by andre on 22-Dec-18.
  */
 
-public class IntentUtil {
+public class IntentUtils {
 
     public static void openImage(Context context, String path) {
         File file = new File(path);

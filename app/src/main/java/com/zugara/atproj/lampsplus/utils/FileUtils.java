@@ -29,22 +29,9 @@ import java.util.List;
  * Created by andre on 15-Dec-18.
  */
 
-public class FileUtil {
+public class FileUtils {
 
-    public static final String TAG = "FileUtil";
-
-    public static List<File> getListFiles(File parentDir) {
-        List<File> result = new ArrayList<>();
-
-        File[] files = parentDir.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                result.add(file);
-            }
-        }
-
-        return result;
-    }
+    public static final String TAG = "FileUtils";
 
     public static File getAppDirectory() {
         return new File(Environment.getExternalStorageDirectory() + "/" + BuildConfig.FLAVOR);
@@ -167,66 +154,6 @@ public class FileUtil {
      */
     public static boolean isMediaDocument(Uri uri) {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
-    }
-
-    public static File createImageFile(Context context){
-        File mediaStorageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "IMG_"+ timeStamp + "_";
-        File image = null;
-        try {
-            image = File.createTempFile(imageFileName, ".jpg", mediaStorageDir);
-        } catch (IOException e) {};
-
-        return image;
-    }
-
-    public static void compressImage(File inFile, File outFile, int outWidth, int outHeight, ScalingUtil.ScalingLogic scalingLogic) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-
-        Bitmap scaledBitmap = null;
-
-        try {
-            Bitmap unscaledBitmap = ScalingUtil.decodeFile(inFile.getAbsolutePath(), outWidth, outHeight, scalingLogic);
-            scaledBitmap = ScalingUtil.createScaledBitmap(unscaledBitmap, outWidth, outHeight, scalingLogic);
-            unscaledBitmap.recycle();
-        } catch (Exception e) {
-            ;
-        }
-
-
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(outFile);
-            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 75, fos);
-            fos.flush();
-            fos.close();
-        } catch (Exception e) {
-            ;
-        }
-
-        scaledBitmap.recycle();
-    }
-
-    public static boolean saveImage(String path, Bitmap bitmap) {
-        File file = new File(path);
-
-        try {
-            FileOutputStream outputStream = new FileOutputStream(file);
-            int quality = 100;
-            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
-            outputStream.flush();
-            outputStream.close();
-        } catch (FileNotFoundException e) {
-            Log.d(TAG, e.getMessage());
-            return false;
-        } catch (IOException e) {
-            Log.d(TAG, e.getMessage());
-            return false;
-        }
-
-        return true;
     }
 
 }

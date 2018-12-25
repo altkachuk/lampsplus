@@ -1,7 +1,6 @@
 package com.zugara.atproj.lampsplus.presenters;
 
 import com.zugara.atproj.lampsplus.model.singleton.SessionContext;
-import com.zugara.atproj.lampsplus.utils.StringUtil;
 import com.zugara.atproj.lampsplus.views.CreateSessionView;
 
 /**
@@ -19,7 +18,7 @@ public class CreateSessionPresenter {
     }
 
     public void create(String name) {
-        if (!StringUtil.isSessionNameLegal(name)) {
+        if (!isSessionNameLegal(name)) {
             view.showIllegalMessage();
             return;
         }
@@ -28,5 +27,17 @@ public class CreateSessionPresenter {
         sessionContext.setSessionName(sessionName);
 
         view.close();
+    }
+
+    private boolean isSessionNameLegal(String name) {
+        if (name.length() < 4) return false;
+
+        String reservedChars = "?:\"*|/\\<>";
+        for (int i = 0;  i < name.length(); i++) {
+            String ch = name.substring(i, i+1);
+            if (reservedChars.indexOf(ch) > -1)
+                return false;
+        }
+        return true;
     }
 }

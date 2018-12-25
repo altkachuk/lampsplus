@@ -2,10 +2,8 @@ package com.zugara.atproj.lampsplus.filemanager;
 
 import android.util.Log;
 
-import com.zugara.atproj.lampsplus.filemanager.FileManagerListener;
-import com.zugara.atproj.lampsplus.filemanager.IFileManager;
 import com.zugara.atproj.lampsplus.model.FileItem;
-import com.zugara.atproj.lampsplus.utils.FileUtil;
+import com.zugara.atproj.lampsplus.utils.FileUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -31,13 +29,13 @@ public class LocalFileManager implements IFileManager {
     @Override
     public void init() {
         breadcrumpsList = new ArrayList<>();
-        File rootDir = FileUtil.getAppDirectory();
+        File rootDir = FileUtils.getAppDirectory();
         breadcrumpsList.add(rootDir);
         if (!rootDir.exists()) {
             boolean result = rootDir.mkdirs();
             Log.d(TAG, "root created: " + result);
         }
-        fileList = FileUtil.getListFiles(breadcrumpsList.get(breadcrumpsList.size()-1));
+        fileList = getListFiles(breadcrumpsList.get(breadcrumpsList.size()-1));
         update();
     }
 
@@ -60,7 +58,7 @@ public class LocalFileManager implements IFileManager {
         File file = fileList.get(position);
         if (file.isDirectory()) {
             breadcrumpsList.add(file);
-            fileList = FileUtil.getListFiles(breadcrumpsList.get(breadcrumpsList.size()-1));
+            fileList = getListFiles(breadcrumpsList.get(breadcrumpsList.size()-1));
             update();
         }
     }
@@ -69,9 +67,22 @@ public class LocalFileManager implements IFileManager {
     public void goBack() {
         if (breadcrumpsList.size() > 1) {
             breadcrumpsList.remove(breadcrumpsList.size()-1);
-            fileList = FileUtil.getListFiles(breadcrumpsList.get(breadcrumpsList.size()-1));
+            fileList = getListFiles(breadcrumpsList.get(breadcrumpsList.size()-1));
             update();
         }
+    }
+
+    private List<File> getListFiles(File parentDir) {
+        List<File> result = new ArrayList<>();
+
+        File[] files = parentDir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                result.add(file);
+            }
+        }
+
+        return result;
     }
 
     private void update() {

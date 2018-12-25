@@ -1,18 +1,13 @@
 package com.zugara.atproj.lampsplus.ui.fragments;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,14 +24,9 @@ import com.zugara.atproj.lampsplus.presenters.CanvasPresenter;
 import com.zugara.atproj.lampsplus.selection.ISelectable;
 import com.zugara.atproj.lampsplus.selection.SelectorManager;
 import com.zugara.atproj.lampsplus.ui.fragments.base.BaseFragment;
-import com.zugara.atproj.lampsplus.utils.BitmapUtil;
-import com.zugara.atproj.lampsplus.utils.FileUtil;
-import com.zugara.atproj.lampsplus.utils.IntentUtil;
-import com.zugara.atproj.lampsplus.utils.MesuarementUtil;
-import com.zugara.atproj.lampsplus.utils.ScalingUtil;
+import com.zugara.atproj.lampsplus.utils.ImageUtils;
+import com.zugara.atproj.lampsplus.utils.IntentUtils;
 import com.zugara.atproj.lampsplus.views.CanvasView;
-
-import java.io.File;
 
 import javax.inject.Inject;
 
@@ -171,7 +161,8 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
 
     @OnClick(R.id.downloadButton)
     public void onClickDownloadButton() {
-        canvasPresenter.download(BitmapUtil.createScreenshot(screenshotHolder));
+        screenshotHolder.setDrawingCacheEnabled(true);
+        canvasPresenter.download(screenshotHolder.getDrawingCache());
     }
 
     @OnClick(R.id.openButton)
@@ -293,12 +284,12 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
 
     @Override
     public void openImage(String path) {
-        IntentUtil.openImage(getActivity().getApplicationContext(), path);
+        IntentUtils.openImage(getActivity().getApplicationContext(), path);
     }
 
     @Override
     public void createEmail(int subjectResId, int messageResId, String attachmentPath) {
-        IntentUtil.createEmail(getActivity().getApplicationContext(), getString(subjectResId), getString(messageResId), attachmentPath);
+        IntentUtils.createEmail(getActivity().getApplicationContext(), getString(subjectResId), getString(messageResId), attachmentPath);
     }
 
     @Override
@@ -308,7 +299,7 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
     }
 
     public void updateBackground(Intent data) {
-        Bitmap bitmap = BitmapUtil.bitmapFromIntent(getActivity().getApplicationContext(), data, backgroundView.getWidth(), backgroundView.getHeight());
+        Bitmap bitmap = ImageUtils.bitmapFromIntent(getActivity().getApplicationContext(), data, backgroundView.getWidth(), backgroundView.getHeight());
         backgroundView.setImageBitmap(bitmap);
     }
 
