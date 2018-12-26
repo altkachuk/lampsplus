@@ -1,6 +1,7 @@
 package com.zugara.atproj.lampsplus.presenters;
 
-import com.zugara.atproj.lampsplus.model.FileItem;
+import com.zugara.atproj.lampsplus.filemanager.LocalFileManager;
+import com.zugara.atproj.lampsplus.model.ItemFile;
 import com.zugara.atproj.lampsplus.filemanager.FileManagerListener;
 import com.zugara.atproj.lampsplus.filemanager.IFileManager;
 import com.zugara.atproj.lampsplus.views.LampsView;
@@ -16,23 +17,23 @@ public class LampsPresenter {
     private LampsView lampsView;
     private IFileManager fileManager;
 
-    public LampsPresenter(LampsView lampsView, IFileManager fileManager) {
+    public LampsPresenter(LampsView lampsView) {
         this.lampsView = lampsView;
         this.fileManager = fileManager;
 
-        init();
+        initFileManager();
     }
 
-    private void init() {
+    private void initFileManager() {
+        fileManager = new LocalFileManager();
         fileManager.addListener(new FileManagerListener() {
             @Override
-            public void onUpdate(List<String> breadcrumps, List<FileItem> fileList) {
+            public void onUpdate(List<String> breadcrumps, List<ItemFile> lampList) {
                 lampsView.enableBackButton(breadcrumps.size() > 1);
                 lampsView.setBreadcrumps(breadcrumps);
-                lampsView.setDataProvider(fileList);
+                lampsView.setDataProvider(lampList);
             }
         });
-
         fileManager.init();
     }
 

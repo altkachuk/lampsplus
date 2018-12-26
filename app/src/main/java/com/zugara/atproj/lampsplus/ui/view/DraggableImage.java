@@ -74,6 +74,28 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
     }
 
     @Override
+    public float getSrcWidth() {
+        Bitmap bitmap = ((BitmapDrawable) getDrawable()).getBitmap();
+        return bitmap.getWidth();
+    }
+
+    public float getSrcHeight() {
+        Bitmap bitmap = ((BitmapDrawable) getDrawable()).getBitmap();
+        return bitmap.getHeight();
+    }
+
+    @Override
+    public void move(float x, float y) {
+        Matrix matrix = getImageMatrix();
+        Bitmap bitmap = ((BitmapDrawable) getDrawable()).getBitmap();
+        float localX = x - bitmap.getWidth() / 2.0f;
+        float localY = y - bitmap.getHeight() / 2.0f;
+        matrix.postTranslate(localX, localY);
+        setMatrix(matrix);
+        dragManager.setMatrix(matrix);
+    }
+
+    @Override
     public boolean checkPoint(float x, float y) {
         Bitmap bitmap = ((BitmapDrawable) getDrawable()).getBitmap();
         float[] realPoints = new float[]{x, y};
@@ -145,6 +167,7 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
             oldBitmap = ((BitmapDrawable) getDrawable()).getBitmap();
         }
         image.setImageBitmap(oldBitmap);
+        image.setTag(this.getTag());
         return image;
     }
 }

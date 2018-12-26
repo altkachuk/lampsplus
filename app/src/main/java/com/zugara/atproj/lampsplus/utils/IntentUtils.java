@@ -15,6 +15,13 @@ import java.io.File;
 
 public class IntentUtils {
 
+    public static void openStorageIntent(Activity activity, String type, int requestCode) {
+        Intent storageIntent = new Intent();
+        storageIntent.setType("image/*");
+        storageIntent.setAction(Intent.ACTION_GET_CONTENT);
+        activity.startActivityForResult(storageIntent, requestCode);
+    }
+
     public static void openImage(Context context, String path) {
         File file = new File(path);
         Intent intent = new Intent(Intent.ACTION_VIEW)

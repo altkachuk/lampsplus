@@ -9,7 +9,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.zugara.atproj.lampsplus.R;
 import com.zugara.atproj.lampsplus.drag.shadow.ImageDragShadowBuilder;
-import com.zugara.atproj.lampsplus.model.FileItem;
+import com.zugara.atproj.lampsplus.model.ItemFile;
 import com.zugara.atproj.lampsplus.ui.view.DraggableImage;
 
 import java.io.File;
@@ -23,7 +23,7 @@ import butterknife.OnLongClick;
  * Created by andre on 15-Dec-18.
  */
 
-public class FileViewHolder extends ItemViewHolder<FileItem> {
+public class FileViewHolder extends ItemViewHolder<ItemFile> {
 
     private static final String IMAGEVIEW_TAG = "icon bitmap";
 
@@ -47,7 +47,7 @@ public class FileViewHolder extends ItemViewHolder<FileItem> {
     }
 
     @Override
-    public void setItem(FileItem file) {
+    public void setItem(ItemFile file) {
         if (isFolder(file.getName())) {
             folderView.setVisibility(View.VISIBLE);
             lampView.setVisibility(View.GONE);
@@ -55,9 +55,9 @@ public class FileViewHolder extends ItemViewHolder<FileItem> {
             folderView.setVisibility(View.GONE);
             lampView.setVisibility(View.VISIBLE);
             draggableImage = new DraggableImage(context);
+            draggableImage.setTag(file.getLamp());
             load(file.getSource());
         }
-
         nameText.setText(file.getName());
     }
 

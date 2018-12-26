@@ -23,9 +23,11 @@ import com.zugara.atproj.lampsplus.model.singleton.SessionContext;
 import com.zugara.atproj.lampsplus.presenters.CanvasPresenter;
 import com.zugara.atproj.lampsplus.selection.ISelectable;
 import com.zugara.atproj.lampsplus.selection.SelectorManager;
+import com.zugara.atproj.lampsplus.ui.activities.MainActivity;
 import com.zugara.atproj.lampsplus.ui.fragments.base.BaseFragment;
 import com.zugara.atproj.lampsplus.utils.ImageUtils;
 import com.zugara.atproj.lampsplus.utils.IntentUtils;
+import com.zugara.atproj.lampsplus.utils.Requests;
 import com.zugara.atproj.lampsplus.views.CanvasView;
 
 import javax.inject.Inject;
@@ -38,8 +40,6 @@ import butterknife.OnClick;
  */
 
 public class CanvasFragment extends BaseFragment implements CanvasView {
-
-    public final static int STORAGE_REQUEST = 100;
 
     @Inject
     SessionContext sessionContext;
@@ -104,31 +104,20 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
             public void onChildViewAdded(View parent, View child) {
                 ((ISelectable) child).setSelectorManager(selectorManager);
                 canvasPresenter.changeNumOfChildren(lampsHolder.getChildCount());
+                canvasPresenter.addTag(child.getTag());
             }
 
             @Override
             public void onChildViewRemoved(View parent, View child) {
+                selectorManager.removeItem((ISelectable) child);
                 canvasPresenter.changeNumOfChildren(lampsHolder.getChildCount());
+                canvasPresenter.removeTag(child.getTag());
             }
         });
 
         canvasPresenter = new CanvasPresenter(this, sessionContext, selectorManager, dragEventListener);
 
         canvasPresenter.changeNumOfChildren(lampsHolder.getChildCount());
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        if (requestCode == STORAGE_REQUEST) {
-            for (int i = 0; i < permissions.length; i++) {
-                String permission = permissions[i];
-                int res = grantResults[i];
-                if (permission.equals(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) && res == PackageManager.PERMISSION_GRANTED) {
-                    if (checkStoragePermissions())
-                        openStorageIntent();
-                }
-            }
-        }
     }
 
     //-------------------------------------------------------------
@@ -178,6 +167,11 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
     @OnClick(R.id.finishButton)
     public void onClickFinishButton() {
         canvasPresenter.finish();
+    }
+
+    @OnClick(R.id.newSessionButton)
+    public void onClickNewSessionButton() {
+        canvasPresenter.newSession();
     }
 
     //-------------------------------------------------------------
@@ -272,13 +266,13 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
     @Override
     public void uploadBackground() {
         if (checkStoragePermissions()) {
-            openStorageIntent();
+            IntentUtils.openStorageIntent(getActivity(), "image/*", Requests.EXTERNAL_STORAGE_REQUEST);
         } else {
             ActivityCompat.requestPermissions(getActivity(),
                     new String[]{
                             android.Manifest.permission.WRITE_EXTERNAL_STORAGE
                     },
-                    STORAGE_REQUEST);
+                    Requests.EXTERNAL_STORAGE_REQUEST);
         }
     }
 
@@ -296,6 +290,11 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
     public void clear() {
         lampsHolder.removeAllViews();
         backgroundView.setImageBitmap(null);
+    }
+
+    @Override
+    public void showCreateSessionFragment() {
+        ((MainActivity) getActivity()).showCreateSessionFragment();
     }
 
     public void updateBackground(Intent data) {
@@ -317,12 +316,5 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
 
     private boolean checkStoragePermissions() {
         return ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void openStorageIntent() {
-        Intent storageIntent = new Intent();
-        storageIntent.setType("image/*");
-        storageIntent.setAction(Intent.ACTION_GET_CONTENT);
-        getActivity().startActivityForResult(storageIntent, STORAGE_REQUEST);
     }
 }

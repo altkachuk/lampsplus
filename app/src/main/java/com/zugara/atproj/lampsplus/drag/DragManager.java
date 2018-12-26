@@ -9,17 +9,15 @@ import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-
-import com.zugara.atproj.lampsplus.ui.view.DraggableImage;
 
 /**
  * Created by andre on 07-Dec-18.
  */
 
 public class DragManager {
+    private final String TAG = "DragManager";
 
-    private final float scale_factor = 0.5f;
+    private final float scale_factor = 1.0f;
 
     // these matrices will be used to move and zoom image
     private Matrix matrix = new Matrix();
@@ -41,7 +39,12 @@ public class DragManager {
         mode = DragMode.NONE;
     }
 
-    public void onTouch(IDraggable view, MotionEvent event) {
+    public void setMatrix(Matrix matrix) {
+        this.matrix.set(matrix);
+        savedMatrix.set(matrix);
+    }
+
+    /*public void onTouch(IDraggable view, MotionEvent event) {
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_POINTER_DOWN:
                 mode = DragMode.DRAG;
@@ -81,6 +84,87 @@ public class DragManager {
         }
 
         view.setMatrix(matrix);
+    }*/
+
+    public void onTouch(IDraggable view, MotionEvent event) {
+        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_DOWN:
+                mode = DragMode.DRAG;
+                savedMatrix.set(matrix);
+                startPos.set(event.getX(), event.getY());
+                break;
+            case MotionEvent.ACTION_POINTER_DOWN:
+                mode = DragMode.ZOOM;
+                savedMatrix.set(matrix);
+                startDist = spacing(event);
+                startRot = rotation(event);
+                break;
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_POINTER_UP:
+                mode = DragMode.NONE;
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if (mode == DragMode.DRAG) {
+                    matrix.set(savedMatrix);
+                    // translate
+                    float dx = event.getX() - startPos.x;
+                    float dy = event.getY() - startPos.y;
+                    matrix.postTranslate(dx, dy);
+                } else if (mode == DragMode.ZOOM) {
+                    float[] src = new float[]{view.getSrcWidth()/2, view.getSrcHeight()/2};
+                    float[] dst = new float[2];
+                    matrix.mapPoints(dst, src);
+                    float px = dst[0];
+                    float py = dst[1];
+
+                    // scale
+                    float newDist = spacing(event);
+                    float scale = (newDist / startDist - 1f) * scale_factor + 1f;
+                    matrix.postScale(scale, scale, px, py);
+                    startDist = newDist;
+
+                    // rotate
+                    float newRot = rotation(event);
+                    float r = newRot - startRot;
+                    matrix.postRotate(r, px, py);
+                    startRot = newRot;
+                }
+                break;
+        }
+
+        view.setMatrix(matrix);
+    }
+
+    /**
+     * Determine the space between the first two fingers
+     */
+    private float spacing(MotionEvent event) {
+        float x = event.getX(0) - event.getX(1);
+        float y = event.getY(0) - event.getY(1);
+        float s=x * x + y * y;
+        return (float)Math.sqrt(s);
+    }
+
+    /**
+     * Calculate the mid point of two fingers
+     */
+    public static void midpoint(PointF point, MotionEvent event) {
+        float x = event.getX(0) + event.getX(1);
+        float y = event.getY(0) + event.getY(1);
+        point.set(x / 2, y / 2);
+    }
+
+    /**
+     * Calculate the degree to be rotated by.
+     *
+     * @param event
+     * @return Degrees
+     */
+    private float rotation(MotionEvent event) {
+        double delta_x = (event.getX(0) - event.getX(1));
+        double delta_y = (event.getY(0) - event.getY(1));
+        double radians = Math.atan2(delta_y, delta_x);
+        return (float) Math.toDegrees(radians);
     }
 
     public static class DragEventListener implements View.OnDragListener {
@@ -126,7 +210,7 @@ public class DragManager {
                     IDraggable view = ((IDraggable) event.getLocalState()).clone();
                     ViewGroup container = (ViewGroup) v;
                     container.addView((View)view);
-
+                    view.move(event.getX(), event.getY());
                     return true;
 
                 case DragEvent.ACTION_DRAG_ENDED:

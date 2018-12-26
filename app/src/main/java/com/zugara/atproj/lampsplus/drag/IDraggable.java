@@ -7,6 +7,9 @@ import android.graphics.Matrix;
  */
 
 public interface IDraggable {
+    float getSrcWidth();
+    float getSrcHeight();
     void setMatrix(Matrix matrix);
+    void move(float x, float y);
     IDraggable clone();
 }

@@ -21,4 +21,5 @@ public interface CanvasView extends LoadingView {
     void openImage(String path);
     void createEmail(int subjectResId, int messageResId, String attachmentPath);
     void clear();
+    void showCreateSessionFragment();
 }

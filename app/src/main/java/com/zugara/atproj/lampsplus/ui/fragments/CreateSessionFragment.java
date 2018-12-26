@@ -61,6 +61,7 @@ public class CreateSessionFragment extends BaseFragment implements CreateSession
 
     @Override
     public void close() {
+        sessionNameText.setText("");
         getView().setVisibility(View.GONE);
     }
 

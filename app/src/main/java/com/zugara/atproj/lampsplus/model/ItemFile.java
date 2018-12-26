@@ -4,12 +4,13 @@ package com.zugara.atproj.lampsplus.model;
  * Created by andre on 17-Dec-18.
  */
 
-public class FileItem {
+public class ItemFile {
 
     private String name;
     private Object source;
+    private Lamp lamp;
 
-    public FileItem(String name, Object source) {
+    public ItemFile(String name, Object source) {
         this.name = name;
         this.source = source;
     }
@@ -20,5 +21,13 @@ public class FileItem {
 
     public Object getSource() {
         return source;
+    }
+
+    public Lamp getLamp() {
+        return lamp;
+    }
+
+    public void setLamp(Lamp lamp) {
+        this.lamp = lamp;
     }
 }

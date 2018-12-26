@@ -6,5 +6,6 @@ package com.zugara.atproj.lampsplus.drag;
 
 public enum DragMode {
     NONE,
-    DRAG
+    DRAG,
+    ZOOM
 }

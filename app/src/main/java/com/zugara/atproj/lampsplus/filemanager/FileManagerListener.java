@@ -1,6 +1,6 @@
 package com.zugara.atproj.lampsplus.filemanager;
 
-import com.zugara.atproj.lampsplus.model.FileItem;
+import com.zugara.atproj.lampsplus.model.ItemFile;
 
 import java.util.List;
 
@@ -9,5 +9,5 @@ import java.util.List;
  */
 
 public interface FileManagerListener {
-    void onUpdate(List<String> breadcrumps, List<FileItem> fileList);
+    void onUpdate(List<String> breadcrumps, List<ItemFile> lampList);
 }

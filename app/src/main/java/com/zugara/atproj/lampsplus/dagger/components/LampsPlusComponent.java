@@ -20,7 +20,6 @@ import dagger.Component;
 @Component(dependencies = {
         ApplicationComponent.class,
         PicassoComponent.class,
-        FileManagerComponent.class,
         RuntimeComponent.class
 })
 

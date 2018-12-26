@@ -7,18 +7,15 @@ import android.util.Log;
 import com.zugara.atproj.lampsplus.BuildConfig;
 import com.zugara.atproj.lampsplus.dagger.components.ApplicationComponent;
 import com.zugara.atproj.lampsplus.dagger.components.DaggerApplicationComponent;
-import com.zugara.atproj.lampsplus.dagger.components.DaggerFileManagerComponent;
 import com.zugara.atproj.lampsplus.dagger.components.DaggerLampsPlusComponent;
 import com.zugara.atproj.lampsplus.dagger.components.DaggerOkHttpClientComponent;
 import com.zugara.atproj.lampsplus.dagger.components.DaggerPicassoComponent;
 import com.zugara.atproj.lampsplus.dagger.components.DaggerRuntimeComponent;
-import com.zugara.atproj.lampsplus.dagger.components.FileManagerComponent;
 import com.zugara.atproj.lampsplus.dagger.components.LampsPlusComponent;
 import com.zugara.atproj.lampsplus.dagger.components.OkHttpClientComponent;
 import com.zugara.atproj.lampsplus.dagger.components.PicassoComponent;
 import com.zugara.atproj.lampsplus.dagger.components.RuntimeComponent;
 import com.zugara.atproj.lampsplus.dagger.modules.ApplicationModule;
-import com.zugara.atproj.lampsplus.dagger.modules.FileManagerModule;
 import com.zugara.atproj.lampsplus.dagger.modules.OkHttpClientModule;
 import com.zugara.atproj.lampsplus.dagger.modules.PicassoModule;
 import com.zugara.atproj.lampsplus.dagger.modules.RuntimeModule;
@@ -37,7 +34,6 @@ public class App extends Application {
     ApplicationComponent applicationComponent;
     OkHttpClientComponent okHttpClientComponent;
     PicassoComponent picassoComponent;
-    FileManagerComponent fileManagerComponent;
     RuntimeComponent runtimeComponent;
 
     @Override
@@ -61,10 +57,6 @@ public class App extends Application {
                 .okHttpClientComponent(okHttpClientComponent)
                 .build();
 
-        fileManagerComponent = DaggerFileManagerComponent.builder()
-                .fileManagerModule(new FileManagerModule())
-                .build();
-
         runtimeComponent = DaggerRuntimeComponent.builder()
                 .runtimeModule(new RuntimeModule())
                 .build();
@@ -74,7 +66,6 @@ public class App extends Application {
         LampsPlusComponent lampsPlusComponent = DaggerLampsPlusComponent.builder()
                 .applicationComponent(applicationComponent)
                 .picassoComponent(picassoComponent)
-                .fileManagerComponent(fileManagerComponent)
                 .runtimeComponent(runtimeComponent)
                 .build();
 

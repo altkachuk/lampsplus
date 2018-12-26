@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.zugara.atproj.lampsplus.R;
-import com.zugara.atproj.lampsplus.model.FileItem;
+import com.zugara.atproj.lampsplus.model.ItemFile;
 import com.zugara.atproj.lampsplus.presenters.LampsPresenter;
 import com.zugara.atproj.lampsplus.ui.adapters.FileAdapter;
 import com.zugara.atproj.lampsplus.ui.decorator.DividerItemDecoration;
@@ -33,9 +33,6 @@ import butterknife.OnClick;
  */
 
 public class LampsFragment extends BaseFragment implements LampsView {
-
-    @Inject
-    IFileManager fileManager;
 
     @BindView(R.id.backButton)
     ImageView backButton;
@@ -61,9 +58,9 @@ public class LampsFragment extends BaseFragment implements LampsView {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        fileAdapter = new FileAdapter(getActivity().getApplicationContext(), new ArrayList<FileItem>());
+        fileAdapter = new FileAdapter(getActivity().getApplicationContext(), new ArrayList<ItemFile>());
         initRecyclerView();
-        lampsPresenter = new LampsPresenter(this, fileManager);
+        lampsPresenter = new LampsPresenter(this);
     }
 
     //-------------------------------------------------------------
@@ -78,7 +75,7 @@ public class LampsFragment extends BaseFragment implements LampsView {
     // LampsView methods
 
     @Override
-    public void setDataProvider(List<FileItem> fileList) {
+    public void setDataProvider(List<ItemFile> fileList) {
         fileAdapter.setItems(fileList);
     }
 

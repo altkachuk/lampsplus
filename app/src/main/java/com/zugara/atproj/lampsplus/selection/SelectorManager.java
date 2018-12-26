@@ -31,8 +31,7 @@ public class SelectorManager {
         item.select();;
     }
 
-    public ISelectable removeFrontItem() {
-        ISelectable item = getFrontItem();
+    public ISelectable removeItem(ISelectable item) {
         if (item != null) {
             item.deselect();
             itemList.remove(item);
@@ -81,6 +80,9 @@ public class SelectorManager {
                     select(event.getX(), event.getY());
                 }
                 mode = DragMode.NONE;
+                break;
+            case MotionEvent.ACTION_MOVE:
+                mode = DragMode.DRAG;
                 break;
         }
     }
