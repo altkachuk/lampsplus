@@ -10,6 +10,7 @@ import com.zugara.atproj.lampsplus.R;
 import com.zugara.atproj.lampsplus.ui.activities.base.BaseActivity;
 import com.zugara.atproj.lampsplus.ui.fragments.CanvasFragment;
 import com.zugara.atproj.lampsplus.ui.fragments.CreateSessionFragment;
+import com.zugara.atproj.lampsplus.ui.fragments.LampsFragment;
 import com.zugara.atproj.lampsplus.utils.IntentUtils;
 import com.zugara.atproj.lampsplus.utils.Requests;
 
@@ -17,6 +18,7 @@ public class MainActivity extends BaseActivity {
 
     private CreateSessionFragment createSessionFragment;
     private CanvasFragment canvasFragment;
+    private LampsFragment lampsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +27,7 @@ public class MainActivity extends BaseActivity {
 
         createSessionFragment = (CreateSessionFragment) getFragmentManager().findFragmentById(R.id.createSessionFragment);
         canvasFragment = (CanvasFragment) getFragmentManager().findFragmentById(R.id.canvasFragment);
+        lampsFragment = (LampsFragment) getFragmentManager().findFragmentById(R.id.lampsFragment);
     }
 
     @Override
@@ -57,5 +60,15 @@ public class MainActivity extends BaseActivity {
 
     public void showCreateSessionFragment() {
         createSessionFragment.getView().setVisibility(View.VISIBLE);
+    }
+
+    public void showLampsFragment() {
+        if (lampsFragment != null)
+            lampsFragment.getView().setVisibility(View.VISIBLE);
+    }
+
+    public void hideLampsFragment() {
+        if (lampsFragment != null)
+            lampsFragment.getView().setVisibility(View.GONE);
     }
 }

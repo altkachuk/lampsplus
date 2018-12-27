@@ -15,11 +15,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zugara.atproj.lampsplus.R;
 import com.zugara.atproj.lampsplus.drag.DragManager;
+import com.zugara.atproj.lampsplus.model.Lamp;
 import com.zugara.atproj.lampsplus.model.singleton.SessionContext;
+import com.zugara.atproj.lampsplus.presenters.ActionPresenter;
 import com.zugara.atproj.lampsplus.presenters.CanvasPresenter;
 import com.zugara.atproj.lampsplus.selection.ISelectable;
 import com.zugara.atproj.lampsplus.selection.SelectorManager;
@@ -28,7 +31,11 @@ import com.zugara.atproj.lampsplus.ui.fragments.base.BaseFragment;
 import com.zugara.atproj.lampsplus.utils.ImageUtils;
 import com.zugara.atproj.lampsplus.utils.IntentUtils;
 import com.zugara.atproj.lampsplus.utils.Requests;
+import com.zugara.atproj.lampsplus.views.ActionView;
 import com.zugara.atproj.lampsplus.views.CanvasView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -39,16 +46,19 @@ import butterknife.OnClick;
  * Created by andre on 15-Dec-18.
  */
 
-public class CanvasFragment extends BaseFragment implements CanvasView {
+public class CanvasFragment extends BaseFragment implements CanvasView, ActionView {
 
     @Inject
     SessionContext sessionContext;
 
     @BindView(R.id.screenshotHolder)
-    RelativeLayout screenshotHolder;
+    LinearLayout screenshotHolder;
 
     @BindView(R.id.lampsHolder)
     RelativeLayout lampsHolder;
+
+    @BindView(R.id.invoiceText)
+    TextView invoiceText;
 
     @BindView(R.id.canvasButtonHolder)
     LinearLayout canvasButtonHolder;
@@ -80,6 +90,8 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
     private ProgressDialog progressDialog;
 
     private CanvasPresenter canvasPresenter;
+    private ActionPresenter actionPresenter;
+
     private SelectorManager selectorManager;
 
     //-------------------------------------------------------------
@@ -104,18 +116,17 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
             public void onChildViewAdded(View parent, View child) {
                 ((ISelectable) child).setSelectorManager(selectorManager);
                 canvasPresenter.changeNumOfChildren(lampsHolder.getChildCount());
-                canvasPresenter.addTag(child.getTag());
             }
 
             @Override
             public void onChildViewRemoved(View parent, View child) {
                 selectorManager.removeItem((ISelectable) child);
                 canvasPresenter.changeNumOfChildren(lampsHolder.getChildCount());
-                canvasPresenter.removeTag(child.getTag());
             }
         });
 
-        canvasPresenter = new CanvasPresenter(this, sessionContext, selectorManager, dragEventListener);
+        canvasPresenter = new CanvasPresenter(this, selectorManager, dragEventListener);
+        actionPresenter = new ActionPresenter(this, sessionContext);
 
         canvasPresenter.changeNumOfChildren(lampsHolder.getChildCount());
     }
@@ -140,38 +151,49 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
 
     @OnClick(R.id.completeButton)
     public void onCompleteButton() {
-        canvasPresenter.complete();
+        canvasPresenter.disable();
+
+        List<Lamp> lampList = new ArrayList<>();
+        for (int i = 0; i < lampsHolder.getChildCount(); i++) {
+            View view = lampsHolder.getChildAt(i);
+            Lamp lamp =  (Lamp) view.getTag();
+            lampList.add(lamp);
+        }
+        actionPresenter.complete(lampList);
     }
 
     @OnClick(R.id.continueButton)
     public void onClickContinueButton() {
-        canvasPresenter.continueAction();
+        canvasPresenter.enable();
+        actionPresenter.continueAction();
     }
 
     @OnClick(R.id.downloadButton)
     public void onClickDownloadButton() {
         screenshotHolder.setDrawingCacheEnabled(true);
-        canvasPresenter.download(screenshotHolder.getDrawingCache());
+        actionPresenter.download(screenshotHolder.getDrawingCache());
     }
 
     @OnClick(R.id.openButton)
     public void onClickOpenButton() {
-        canvasPresenter.open();
+        actionPresenter.openImage();
     }
 
     @OnClick(R.id.sendButton)
     public void onClickSendButton() {
-        canvasPresenter.send();
+        actionPresenter.sendByEmail();
     }
 
     @OnClick(R.id.finishButton)
     public void onClickFinishButton() {
-        canvasPresenter.finish();
+        canvasPresenter.enable();
+        canvasPresenter.clear();
+        actionPresenter.finish();
     }
 
     @OnClick(R.id.newSessionButton)
     public void onClickNewSessionButton() {
-        canvasPresenter.newSession();
+        actionPresenter.newSession();
     }
 
     //-------------------------------------------------------------
@@ -215,6 +237,45 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
     }
 
     @Override
+    public void uploadBackground() {
+        if (checkStoragePermissions()) {
+            IntentUtils.openStorageIntent(getActivity(), "image/*", Requests.EXTERNAL_STORAGE_REQUEST);
+        } else {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{
+                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    },
+                    Requests.EXTERNAL_STORAGE_REQUEST);
+        }
+    }
+
+
+
+    @Override
+    public void deleteLamp(ISelectable item) {
+        lampsHolder.removeView((View)item);
+    }
+
+    @Override
+    public void addLamp(ISelectable item) {
+        lampsHolder.addView((View) item);
+    }
+
+    public void updateBackground(Intent data) {
+        Bitmap bitmap = ImageUtils.bitmapFromIntent(getActivity().getApplicationContext(), data, backgroundView.getWidth(), backgroundView.getHeight());
+        backgroundView.setImageBitmap(bitmap);
+    }
+
+    @Override
+    public void clear() {
+        lampsHolder.removeAllViews();
+        backgroundView.setImageBitmap(null);
+    }
+
+    //-------------------------------------------------------------
+    // ActionView methods
+
+    @Override
     public void gotoCanvasState() {
         uploadButton.setVisibility(View.VISIBLE);
         copyButton.setVisibility(View.VISIBLE);
@@ -222,6 +283,9 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
         completeButton.setVisibility(View.VISIBLE);
         continueButton.setVisibility(View.GONE);
         downloadButton.setVisibility(View.GONE);
+
+        invoiceText.setVisibility(View.GONE);
+        ((MainActivity) getActivity()).showLampsFragment();
     }
 
     @Override
@@ -232,6 +296,9 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
         completeButton.setVisibility(View.GONE);
         continueButton.setVisibility(View.VISIBLE);
         downloadButton.setVisibility(View.VISIBLE);
+
+        invoiceText.setVisibility(View.VISIBLE);
+        ((MainActivity) getActivity()).hideLampsFragment();
     }
 
     @Override
@@ -249,31 +316,9 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
         sessionButtonHolder.setVisibility(View.VISIBLE);
     }
 
+    @Override
     public void hideSessionButtons() {
         sessionButtonHolder.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void deleteLamp(ISelectable item) {
-        lampsHolder.removeView((View)item);
-    }
-
-    @Override
-    public void addLamp(ISelectable item) {
-        lampsHolder.addView((View) item);
-    }
-
-    @Override
-    public void uploadBackground() {
-        if (checkStoragePermissions()) {
-            IntentUtils.openStorageIntent(getActivity(), "image/*", Requests.EXTERNAL_STORAGE_REQUEST);
-        } else {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{
-                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    },
-                    Requests.EXTERNAL_STORAGE_REQUEST);
-        }
     }
 
     @Override
@@ -282,24 +327,18 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
     }
 
     @Override
+    public void setInvoice(String text) {
+        invoiceText.setText(text);
+    }
+
+    @Override
     public void createEmail(int subjectResId, int messageResId, String attachmentPath) {
         IntentUtils.createEmail(getActivity().getApplicationContext(), getString(subjectResId), getString(messageResId), attachmentPath);
     }
 
     @Override
-    public void clear() {
-        lampsHolder.removeAllViews();
-        backgroundView.setImageBitmap(null);
-    }
-
-    @Override
     public void showCreateSessionFragment() {
         ((MainActivity) getActivity()).showCreateSessionFragment();
-    }
-
-    public void updateBackground(Intent data) {
-        Bitmap bitmap = ImageUtils.bitmapFromIntent(getActivity().getApplicationContext(), data, backgroundView.getWidth(), backgroundView.getHeight());
-        backgroundView.setImageBitmap(bitmap);
     }
 
     //-------------------------------------------------------------
