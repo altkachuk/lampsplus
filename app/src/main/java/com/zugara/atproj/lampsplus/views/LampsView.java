@@ -12,4 +12,5 @@ public interface LampsView {
     void setDataProvider(List<ItemFile> fileList);
     void setBreadcrumps(List<String> breadcrumps);
     void enableBackButton(boolean enable);
+    void showProductListError();
 }

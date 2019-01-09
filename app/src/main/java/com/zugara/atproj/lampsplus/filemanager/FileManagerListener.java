@@ -10,4 +10,5 @@ import java.util.List;
 
 public interface FileManagerListener {
     void onUpdate(List<String> breadcrumps, List<ItemFile> lampList);
+    void onProductListError();
 }

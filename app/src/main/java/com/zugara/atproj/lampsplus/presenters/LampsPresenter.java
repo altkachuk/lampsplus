@@ -33,6 +33,10 @@ public class LampsPresenter {
                 lampsView.setBreadcrumps(breadcrumps);
                 lampsView.setDataProvider(lampList);
             }
+            @Override
+            public void onProductListError() {
+                lampsView.showProductListError();
+            }
         });
         fileManager.init();
     }

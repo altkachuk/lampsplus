@@ -3,8 +3,6 @@ package com.zugara.atproj.lampsplus.selection;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.zugara.atproj.lampsplus.drag.DragMode;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +12,11 @@ import java.util.List;
 
 public class SelectorManager {
 
-    private DragMode mode = DragMode.NONE;
+    private final int NON_CLICK_MODE = 0;
+    private final int CLICK_MODE = 1;
+
+    private int mode = CLICK_MODE;
+    private long downEventTime = 0;
 
     private List<ISelectable> itemList = new ArrayList<>();
     private boolean enabled = true;
@@ -73,16 +75,22 @@ public class SelectorManager {
 
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_POINTER_DOWN:
-                mode = DragMode.DRAG;
+                mode = NON_CLICK_MODE;
+                break;
+            case MotionEvent.ACTION_DOWN:
+                downEventTime = event.getEventTime();
                 break;
             case MotionEvent.ACTION_UP:
-                if (mode == DragMode.NONE) {
+                if (mode == NON_CLICK_MODE) {
+                    mode = (event.getEventTime() - downEventTime < 200) ? CLICK_MODE : NON_CLICK_MODE;
+                }
+                if (mode == CLICK_MODE) {
                     select(event.getX(), event.getY());
                 }
-                mode = DragMode.NONE;
+                mode = CLICK_MODE;
                 break;
             case MotionEvent.ACTION_MOVE:
-                mode = DragMode.DRAG;
+                mode = NON_CLICK_MODE;
                 break;
         }
     }

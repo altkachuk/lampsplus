@@ -193,6 +193,8 @@ public class CanvasFragment extends BaseFragment implements CanvasView, ActionVi
 
     @OnClick(R.id.newSessionButton)
     public void onClickNewSessionButton() {
+        canvasPresenter.enable();
+        canvasPresenter.clear();
         actionPresenter.newSession();
     }
 

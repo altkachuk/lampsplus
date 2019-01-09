@@ -1,6 +1,4 @@
 <resources>
-    <string name="app_name">LampsPlus</string>
-
     <string name="upload">Upload</string>
     <string name="copy">Copy</string>
     <string name="delete">Delete</string>
@@ -17,4 +15,5 @@
     <string name="email_subject">Email subject</string>
     <string name="email_message">Email message</string>
     <string name="new_session">New Session</string>
+    <string name="product_list_error">Product List is not exist!</string>
 </resources>

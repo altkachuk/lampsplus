@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.zugara.atproj.lampsplus.R;
 import com.zugara.atproj.lampsplus.model.ItemFile;
@@ -94,6 +95,11 @@ public class LampsFragment extends BaseFragment implements LampsView {
     @Override
     public void enableBackButton(boolean enable) {
         backButton.setEnabled(enable);
+    }
+
+    @Override
+    public void showProductListError() {
+        Toast.makeText(getActivity().getApplicationContext(), getString(R.string.product_list_error), Toast.LENGTH_SHORT).show();
     }
 
     //-------------------------------------------------------------

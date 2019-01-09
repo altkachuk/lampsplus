@@ -1,0 +1,16 @@
+ext {
+    supportVersion = '27.+'
+    daggerVersion = '2.9'
+    butterknifeVersion = '8.8.1'
+    retrofitVersion = '2.4.0'
+    okhttp3Version = '3.10.0'
+    okioVersion = '1.13.0'
+    gsonVersion = '2.8.2'
+    picassoVersion = '2.71828'
+    junitVersion = '4.12'
+    mockitoVersion = '2.23.4'
+    runnerVersion = '1.0.2'
+    espressoVersion = '3.0.2'
+    powerMockVersion = '1.7.4'
+    robolectricVersion = '4.1'
+}

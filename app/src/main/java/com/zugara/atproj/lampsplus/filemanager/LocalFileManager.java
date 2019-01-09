@@ -168,6 +168,11 @@ public class LocalFileManager implements IFileManager {
             Log.d(TAG, "OK");
         } catch (IOException e) {
             Log.d(TAG, e.getMessage());
+        } catch (NullPointerException e) {
+            Log.d(TAG, e.getMessage());
+            for (FileManagerListener listener : listenerHashMap.keySet()) {
+                listener.onProductListError();
+            }
         }
 
     }
