@@ -32,6 +32,7 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
     private DragManager dragManager;
     private SelectorManager selectorManager;
     private Bitmap oldBitmap;
+    private boolean selected = false;
 
     public DraggableImage(Context context) {
         super(context);
@@ -71,6 +72,11 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
     @Override
     public void setMatrix(Matrix matrix) {
         setImageMatrix(matrix);
+
+        if (selected) {
+            Bitmap highlightedBitmap = highlightImage(oldBitmap, getCurrentScale());
+            setImageBitmap(highlightedBitmap);
+        }
     }
 
     @Override
@@ -93,6 +99,15 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
         matrix.postTranslate(localX, localY);
         setMatrix(matrix);
         dragManager.setMatrix(matrix);
+    }
+
+    @Override
+    public void mirror() {
+        Matrix matrix = new Matrix();
+        matrix.preScale(-1.0f, 1.0f);
+        Bitmap outBitmap = Bitmap.createBitmap(oldBitmap, 0, 0, oldBitmap.getWidth(), oldBitmap.getHeight(), matrix, true);
+        setImageBitmap(outBitmap);
+        oldBitmap = outBitmap;
     }
 
     @Override
@@ -120,20 +135,29 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
 
     @Override
     public void select() {
+        selected = true;
         bringToFront();
         if (oldBitmap == null)
             oldBitmap = ((BitmapDrawable) getDrawable()).getBitmap();
-        Bitmap highlightedBitmap = highlightImage(oldBitmap);
+
+        Bitmap highlightedBitmap = highlightImage(oldBitmap, getCurrentScale());
         setImageBitmap(highlightedBitmap);
     }
 
+    private float getCurrentScale() {
+        float[] fMatrix = new float[9];
+        getImageMatrix().getValues(fMatrix);
+        return fMatrix[Matrix.MSCALE_X];
+    }
+
     public void deselect() {
+        selected = false;
         if (oldBitmap != null) {
             setImageBitmap(oldBitmap);
         }
     }
 
-    public Bitmap highlightImage(Bitmap src) {
+    public Bitmap highlightImage(Bitmap src, float scale) {
         // create new bitmap, which will be painted and becomes result image
         Bitmap bmOut = Bitmap.createBitmap(src.getWidth() + 96, src.getHeight() + 96, Bitmap.Config.ARGB_8888);
         // setup canvas for painting
@@ -142,7 +166,7 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
         canvas.drawColor(0, PorterDuff.Mode.CLEAR);
         // create a blur paint for capturing alpha
         Paint ptBlur = new Paint();
-        ptBlur.setMaskFilter(new BlurMaskFilter(15, BlurMaskFilter.Blur.NORMAL));
+        ptBlur.setMaskFilter(new BlurMaskFilter(15/scale, BlurMaskFilter.Blur.NORMAL));
         int[] offsetXY = new int[2];
         // capture alpha into a bitmap
         Bitmap bmAlpha = src.extractAlpha(ptBlur, offsetXY);

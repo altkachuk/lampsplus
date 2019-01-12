@@ -10,6 +10,7 @@ import android.graphics.Matrix;
 public interface ISelectable {
     void setSelectorManager(SelectorManager selectorManager);
     boolean checkPoint(float x, float y);
+    void mirror();
     void select();
     void deselect();
 }

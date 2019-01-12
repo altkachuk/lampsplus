@@ -72,6 +72,9 @@ public class CanvasFragment extends BaseFragment implements CanvasView, ActionVi
     @BindView(R.id.uploadButton)
     Button uploadButton;
 
+    @BindView(R.id.mirrorButton)
+    Button mirrorButton;
+
     @BindView(R.id.copyButton)
     Button copyButton;
 
@@ -137,6 +140,11 @@ public class CanvasFragment extends BaseFragment implements CanvasView, ActionVi
     @OnClick(R.id.uploadButton)
     public void onClickUploadButton() {
         canvasPresenter.upload();
+    }
+
+    @OnClick(R.id.mirrorButton)
+    public void onClickMirrorButton() {
+        canvasPresenter.mirror();
     }
 
     @OnClick(R.id.copyButton)
@@ -226,13 +234,16 @@ public class CanvasFragment extends BaseFragment implements CanvasView, ActionVi
 
     @Override
     public void enableLampButtons(boolean enable) {
+        mirrorButton.setEnabled(enable);
         copyButton.setEnabled(enable);
         deleteButton.setEnabled(enable);
 
         if (enable) {
+            mirrorButton.setAlpha(0.75f);
             copyButton.setAlpha(0.75f);
             deleteButton.setAlpha(0.75f);
         } else {
+            mirrorButton.setAlpha(1f);
             copyButton.setAlpha(1f);
             deleteButton.setAlpha(1f);
         }
@@ -280,6 +291,7 @@ public class CanvasFragment extends BaseFragment implements CanvasView, ActionVi
     @Override
     public void gotoCanvasState() {
         uploadButton.setVisibility(View.VISIBLE);
+        mirrorButton.setVisibility(View.VISIBLE);
         copyButton.setVisibility(View.VISIBLE);
         deleteButton.setVisibility(View.VISIBLE);
         completeButton.setVisibility(View.VISIBLE);
@@ -293,6 +305,7 @@ public class CanvasFragment extends BaseFragment implements CanvasView, ActionVi
     @Override
     public void gotoCompleteState() {
         uploadButton.setVisibility(View.GONE);
+        mirrorButton.setVisibility(View.GONE);
         copyButton.setVisibility(View.GONE);
         deleteButton.setVisibility(View.GONE);
         completeButton.setVisibility(View.GONE);

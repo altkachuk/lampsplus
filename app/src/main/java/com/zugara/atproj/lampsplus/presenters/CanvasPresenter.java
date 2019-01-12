@@ -44,6 +44,10 @@ public class CanvasPresenter {
         canvasView.uploadBackground();
     }
 
+    public void mirror() {
+        ((ISelectable)selectorManager.getFrontItem()).mirror();
+    }
+
     public void copy() {
         ISelectable item = (ISelectable) ((IDraggable)selectorManager.getFrontItem()).clone();
         canvasView.addLamp(item);

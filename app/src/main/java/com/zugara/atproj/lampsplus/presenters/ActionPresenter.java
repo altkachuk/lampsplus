@@ -96,12 +96,14 @@ public class ActionPresenter {
         HashMap<String, Integer> quantityList = new HashMap<>();
         float totalPrice = 0f;
         for (Lamp lamp : lampList) {
-            String id = lamp.getId();
-            nameList.put(lamp.getId(), lamp.getId());
-            priceList.put(lamp.getId(), lamp.getPrice());
-            int qnt = quantityList.containsKey(id) ? quantityList.get(id) + 1 : 1;
-            quantityList.put(id, qnt);
-            totalPrice += lamp.getPrice();
+            if (lamp != null) {
+                String id = lamp.getId();
+                nameList.put(lamp.getId(), lamp.getId());
+                priceList.put(lamp.getId(), lamp.getPrice());
+                int qnt = quantityList.containsKey(id) ? quantityList.get(id) + 1 : 1;
+                quantityList.put(id, qnt);
+                totalPrice += lamp.getPrice();
+            }
         }
 
         String newStrCh = "\n";
