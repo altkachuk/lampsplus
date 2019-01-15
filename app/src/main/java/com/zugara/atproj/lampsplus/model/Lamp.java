@@ -7,11 +7,12 @@ package com.zugara.atproj.lampsplus.model;
 public class Lamp {
 
     String id;
-    String name;
+    String description;
     Float price;
 
-    public Lamp(String id, float price) {
+    public Lamp(String id, String description, float price) {
         this.id = id;
+        this.description = description;
         this.price = price;
     }
 
@@ -23,12 +24,12 @@ public class Lamp {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getDescription() {
+        return description;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setDescription(String name) {
+        this.description = name;
     }
 
     public Float getPrice() {

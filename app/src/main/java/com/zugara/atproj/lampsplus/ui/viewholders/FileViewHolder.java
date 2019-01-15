@@ -51,14 +51,18 @@ public class FileViewHolder extends ItemViewHolder<ItemFile> {
         if (isFolder(file.getName())) {
             folderView.setVisibility(View.VISIBLE);
             lampView.setVisibility(View.GONE);
+            nameText.setText(file.getName());
         } else {
             folderView.setVisibility(View.GONE);
             lampView.setVisibility(View.VISIBLE);
             draggableImage = new DraggableImage(context);
             draggableImage.setTag(file.getLamp());
             load(file.getSource());
+            try {
+                nameText.setText(file.getLamp().getDescription());
+            } catch (Exception e) {};
         }
-        nameText.setText(file.getName());
+
     }
 
     private boolean isFolder(String fileName) {

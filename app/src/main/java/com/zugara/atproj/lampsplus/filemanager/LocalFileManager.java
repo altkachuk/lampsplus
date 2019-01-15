@@ -148,17 +148,20 @@ public class LocalFileManager implements IFileManager {
                 Row row = rowIterator.next();
                 if (rowIndex != 0) {
                     String id = "";
+                    String description = "";
                     float price = 0.0f;
                     for (Iterator<Cell> cellIterator = row.cellIterator(); cellIterator.hasNext(); ) {
                         Cell cell = cellIterator.next();
                         if (cellIndex == 0) {
                             id = cell.toString();
                         } else if (cellIndex == 1) {
+                            description = cell.toString();
+                        } else if (cellIndex == 2) {
                             price = Float.parseFloat(cell.toString());
                         }
                         cellIndex++;
                     }
-                    Lamp lamp = new Lamp(id, price);
+                    Lamp lamp = new Lamp(id, description, price);
                     lampList.put(id, lamp);
                 }
                 cellIndex = 0;

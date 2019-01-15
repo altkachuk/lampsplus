@@ -108,6 +108,11 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
         Bitmap outBitmap = Bitmap.createBitmap(oldBitmap, 0, 0, oldBitmap.getWidth(), oldBitmap.getHeight(), matrix, true);
         setImageBitmap(outBitmap);
         oldBitmap = outBitmap;
+
+        if (selected) {
+            Bitmap highlightedBitmap = highlightImage(oldBitmap, getCurrentScale());
+            setImageBitmap(highlightedBitmap);
+        }
     }
 
     @Override
