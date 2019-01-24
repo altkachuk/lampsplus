@@ -24,6 +24,8 @@ public class CanvasPresenter {
     private SelectorManager selectorManager;
     DragManager.DragEventListener dragEventListener;
 
+    private float shadowPercent = 0f;
+
     public CanvasPresenter(CanvasView canvasView, SelectorManager selectorManager, DragManager.DragEventListener dragEventListener) {
         this.canvasView = canvasView;
         this.selectorManager = selectorManager;
@@ -57,6 +59,15 @@ public class CanvasPresenter {
         ISelectable item = selectorManager.getFrontItem();
         if (item != null)
             canvasView.deleteLamp(item);
+    }
+
+    public void increaseShadow() {
+        shadowPercent += 0.4f;
+        if (shadowPercent > 0.9f) {
+            shadowPercent = 0f;
+        }
+
+        canvasView.setShadow(shadowPercent);
     }
 
     public void clear() {

@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.ColorSpace;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -57,6 +59,9 @@ public class CanvasFragment extends BaseFragment implements CanvasView, ActionVi
     @BindView(R.id.lampsHolder)
     RelativeLayout lampsHolder;
 
+    @BindView(R.id.shadowView)
+    RelativeLayout shadowView;
+
     @BindView(R.id.invoiceText)
     TextView invoiceText;
 
@@ -80,6 +85,9 @@ public class CanvasFragment extends BaseFragment implements CanvasView, ActionVi
 
     @BindView(R.id.deleteButton)
     Button deleteButton;
+
+    @BindView(R.id.shadowButton)
+    Button shadowButton;
 
     @BindView(R.id.completeButton)
     Button completeButton;
@@ -155,6 +163,11 @@ public class CanvasFragment extends BaseFragment implements CanvasView, ActionVi
     @OnClick(R.id.deleteButton)
     public void onClickDeleteButton() {
         canvasPresenter.delete();
+    }
+
+    @OnClick(R.id.shadowButton)
+    public void onClickShadowButon() {
+        canvasPresenter.increaseShadow();
     }
 
     @OnClick(R.id.completeButton)
@@ -262,6 +275,13 @@ public class CanvasFragment extends BaseFragment implements CanvasView, ActionVi
         }
     }
 
+    @Override
+    public void setShadow(float percent) {
+        String shadowText = percent == 0 ? getString(R.string.off) : String.valueOf((int)(percent*100f));
+        shadowButton.setText(shadowText);
+        int color = Color.argb((int)(255f*percent), 0, 0, 0);
+        shadowView.setBackgroundColor(color);
+    }
 
 
     @Override

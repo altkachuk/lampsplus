@@ -1,6 +1,6 @@
 package com.zugara.atproj.lampsplus.views;
 
-import com.zugara.atproj.lampsplus.model.ItemFile;
+import com.zugara.atproj.lampsplus.model.BaseFile;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import java.util.List;
  */
 
 public interface LampsView {
-    void setDataProvider(List<ItemFile> fileList);
+    void setDataProvider(List<BaseFile> fileList);
     void setBreadcrumps(List<String> breadcrumps);
     void enableBackButton(boolean enable);
     void showProductListError();

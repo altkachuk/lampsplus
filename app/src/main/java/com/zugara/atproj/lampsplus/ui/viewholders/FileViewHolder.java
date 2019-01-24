@@ -14,7 +14,9 @@ import com.squareup.picasso.Picasso;
 import com.zugara.atproj.lampsplus.R;
 import com.zugara.atproj.lampsplus.drag.OnDragTouchListener;
 import com.zugara.atproj.lampsplus.drag.shadow.ImageDragShadowBuilder;
-import com.zugara.atproj.lampsplus.model.ItemFile;
+import com.zugara.atproj.lampsplus.model.BaseFile;
+import com.zugara.atproj.lampsplus.model.Folder;
+import com.zugara.atproj.lampsplus.model.Lamp;
 import com.zugara.atproj.lampsplus.ui.view.DraggableImage;
 
 import java.io.File;
@@ -28,7 +30,7 @@ import butterknife.OnLongClick;
  * Created by andre on 15-Dec-18.
  */
 
-public class FileViewHolder extends ItemViewHolder<ItemFile> {
+public class FileViewHolder extends ItemViewHolder<BaseFile> {
 
     private static final String IMAGEVIEW_TAG = "icon bitmap";
 
@@ -52,7 +54,7 @@ public class FileViewHolder extends ItemViewHolder<ItemFile> {
         holderView = view;
         lampView.setTag(IMAGEVIEW_TAG);
 
-        lampView.setOnTouchListener(new OnDragTouchListener(context, -25) {
+        lampView.setOnTouchListener(new OnDragTouchListener(context) {
             @Override
             public void onInitDrag() {
                 startDrag(lampView);
@@ -62,8 +64,8 @@ public class FileViewHolder extends ItemViewHolder<ItemFile> {
     }
 
     @Override
-    public void setItem(ItemFile file) {
-        if (isFolder(file.getName())) {
+    public void setItem(BaseFile file) {
+        if (file instanceof Folder) {
             folderView.setVisibility(View.VISIBLE);
             lampView.setVisibility(View.GONE);
             nameText.setText(file.getName());
@@ -71,17 +73,13 @@ public class FileViewHolder extends ItemViewHolder<ItemFile> {
             folderView.setVisibility(View.GONE);
             lampView.setVisibility(View.VISIBLE);
             draggableImage = new DraggableImage(context);
-            draggableImage.setTag(file.getLamp());
+            draggableImage.setTag(file);
             load(file.getSource());
             try {
-                nameText.setText(file.getLamp().getDescription());
+                nameText.setText(((Lamp)file).getDescription());
             } catch (Exception e) {};
         }
 
-    }
-
-    private boolean isFolder(String fileName) {
-        return !fileName.contains(".");
     }
 
     private void load(Object source) {

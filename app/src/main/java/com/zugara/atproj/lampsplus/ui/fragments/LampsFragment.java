@@ -12,13 +12,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zugara.atproj.lampsplus.R;
-import com.zugara.atproj.lampsplus.model.ItemFile;
+import com.zugara.atproj.lampsplus.model.BaseFile;
 import com.zugara.atproj.lampsplus.presenters.LampsPresenter;
 import com.zugara.atproj.lampsplus.ui.adapters.FileAdapter;
 import com.zugara.atproj.lampsplus.ui.decorator.DividerItemDecoration;
 import com.zugara.atproj.lampsplus.ui.fragments.base.BaseFragment;
 import com.zugara.atproj.lampsplus.ui.listener.RecyclerItemClickListener;
-import com.zugara.atproj.lampsplus.filemanager.IFileManager;
 import com.zugara.atproj.lampsplus.views.LampsView;
 
 import java.util.ArrayList;
@@ -59,7 +58,7 @@ public class LampsFragment extends BaseFragment implements LampsView {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        fileAdapter = new FileAdapter(getActivity().getApplicationContext(), new ArrayList<ItemFile>());
+        fileAdapter = new FileAdapter(getActivity().getApplicationContext(), new ArrayList<BaseFile>());
         initRecyclerView();
         lampsPresenter = new LampsPresenter(this);
     }
@@ -76,7 +75,7 @@ public class LampsFragment extends BaseFragment implements LampsView {
     // LampsView methods
 
     @Override
-    public void setDataProvider(List<ItemFile> fileList) {
+    public void setDataProvider(List<BaseFile> fileList) {
         fileAdapter.setItems(fileList);
     }
 

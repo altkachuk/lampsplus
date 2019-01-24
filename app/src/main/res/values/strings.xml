@@ -17,4 +17,5 @@
     <string name="email_message">Email message</string>
     <string name="new_session">New Session</string>
     <string name="product_list_error">Product List is not exist!</string>
+    <string name="off">Off</string>
 </resources>

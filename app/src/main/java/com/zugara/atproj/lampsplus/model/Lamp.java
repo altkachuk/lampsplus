@@ -4,17 +4,12 @@ package com.zugara.atproj.lampsplus.model;
  * Created by andre on 26-Dec-18.
  */
 
-public class Lamp {
+public class Lamp extends BaseFile {
 
     String id;
     String description;
     Float price;
-
-    public Lamp(String id, String description, float price) {
-        this.id = id;
-        this.description = description;
-        this.price = price;
-    }
+    BaseFile glow;
 
     public String getId() {
         return id;
@@ -28,8 +23,8 @@ public class Lamp {
         return description;
     }
 
-    public void setDescription(String name) {
-        this.description = name;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Float getPrice() {
@@ -38,5 +33,13 @@ public class Lamp {
 
     public void setPrice(Float price) {
         this.price = price;
+    }
+
+    public BaseFile getGlow() {
+        return glow;
+    }
+
+    public void setGlow(BaseFile glow) {
+        this.glow = glow;
     }
 }

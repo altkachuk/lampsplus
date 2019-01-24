@@ -12,15 +12,9 @@ import android.view.View;
 public class OnDragTouchListener implements View.OnTouchListener {
 
     private final GestureDetector gestureDetector;
-    private float xOffset;
-
-    public OnDragTouchListener(Context context, float xOffset){
-        this.xOffset = xOffset;
-        gestureDetector = new GestureDetector(context, new GestureListener());
-    }
 
     public OnDragTouchListener(Context context){
-        this(context, 0);
+        gestureDetector = new GestureDetector(context, new GestureListener());
     }
 
     @Override
@@ -37,19 +31,15 @@ public class OnDragTouchListener implements View.OnTouchListener {
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            if (e1.getX() > xOffset && e2.getX() < xOffset) {
-                onInitDrag();
-                return true;
+            // left motion
+            if (e2.getX() - e1.getX() < 0) {
+                // left swipe
+                if (distanceX  >= distanceY) {
+                    onInitDrag();
+                    return true;
+                }
             }
-            return false;
-        }
 
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            if (e1.getX() > xOffset && e2.getX() < xOffset) {
-                onInitDrag();
-                return true;
-            }
             return false;
         }
     }

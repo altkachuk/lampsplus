@@ -12,5 +12,6 @@ public interface CanvasView extends LoadingView {
     void deleteLamp(ISelectable item);
     void addLamp(ISelectable item);
     void uploadBackground();
+    void setShadow(float percent);
     void clear();
 }

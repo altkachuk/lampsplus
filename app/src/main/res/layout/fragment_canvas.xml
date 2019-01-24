@@ -17,6 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="0.3">
+
             <ImageView
                 android:id="@+id/backgroundView"
                 android:layout_width="match_parent"
@@ -26,6 +27,12 @@
                 android:id="@+id/lampsHolder"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
+
+
+            <RelativeLayout
+                android:id="@+id/shadowView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"></RelativeLayout>
 
         </RelativeLayout>
 
@@ -71,6 +78,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/delete" />
+
+        <Button
+            android:id="@+id/shadowButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/off"/>
 
         <Button
             android:id="@+id/completeButton"
