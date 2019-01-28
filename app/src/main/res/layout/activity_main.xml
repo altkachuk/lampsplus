@@ -10,12 +10,33 @@
         android:layout_height="match_parent"
         android:orientation="horizontal">
 
-        <fragment
-            android:id="@+id/canvasFragment"
-            android:name="com.zugara.atproj.lampsplus.ui.fragments.CanvasFragment"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.3"/>
+            android:orientation="vertical"
+            android:layout_weight="0.3">
+
+            <fragment
+                android:id="@+id/canvasFragment"
+                android:name="com.zugara.atproj.lampsplus.ui.fragments.CanvasFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+
+            <fragment
+                android:id="@+id/invoiceFragment"
+                android:name="com.zugara.atproj.lampsplus.ui.fragments.InvoiceFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+
+            <fragment
+                android:id="@+id/actionsFragment"
+                android:name="com.zugara.atproj.lampsplus.ui.fragments.ActionsFragment"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+        </LinearLayout>
 
         <fragment
             android:id="@+id/lampsFragment"

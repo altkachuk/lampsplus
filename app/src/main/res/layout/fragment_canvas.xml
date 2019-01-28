@@ -18,10 +18,16 @@
             android:layout_height="match_parent"
             android:layout_weight="0.3">
 
+            <RelativeLayout
+                android:id="@+id/glowHolder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
             <ImageView
                 android:id="@+id/backgroundView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:background="#FFFFFF"/>
 
             <RelativeLayout
                 android:id="@+id/lampsHolder"
@@ -29,113 +35,12 @@
                 android:layout_height="match_parent"/>
 
 
-            <RelativeLayout
+            <ImageView
                 android:id="@+id/shadowView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"></RelativeLayout>
+                android:layout_height="match_parent"/>
 
         </RelativeLayout>
-
-
-        <TextView
-            android:id="@+id/invoiceText"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="8dp"
-            android:layout_weight="0.7"/>
-
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:id="@+id/canvasButtonHolder"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/uploadButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/upload" />
-
-        <Button
-            android:id="@+id/mirrorButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/mirror" />
-
-        <Button
-            android:id="@+id/copyButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/copy" />
-
-        <Button
-            android:id="@+id/deleteButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/delete" />
-
-        <Button
-            android:id="@+id/shadowButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/off"/>
-
-        <Button
-            android:id="@+id/completeButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/complete" />
-
-        <Button
-            android:id="@+id/continueButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/continue_string"/>
-
-        <Button
-            android:id="@+id/downloadButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/download"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/sessionButtonHolder"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/openButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/open" />
-
-        <Button
-            android:id="@+id/sendButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/send" />
-
-        <Button
-            android:id="@+id/finishButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/finish" />
-
-        <Button
-            android:id="@+id/newSessionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/new_session"/>
 
     </LinearLayout>
 

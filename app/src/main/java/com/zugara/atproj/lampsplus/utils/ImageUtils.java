@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,17 +23,20 @@ public class ImageUtils {
     public static final String TAG = "ImageUtils";
 
     static public Bitmap bitmapFromIntent(Context context, Intent data, int width, int height) {
-        String path = FileUtils.getActualPath(context, data.getData());
-        File selectedFile = new File(path);
-        File outFile = createTempImageFile(context);
-        compressImageFile(
-                selectedFile,
-                outFile,
-                DpPxConverter.dpToPixel(context, width),
-                DpPxConverter.dpToPixel(context, height),
-                ScalingUtils.ScalingLogic.CROP);
-        Bitmap bitmap = BitmapFactory.decodeFile(outFile.getAbsolutePath());
-        return bitmap;
+        Uri contentURI = data.getData();
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), contentURI);
+            return compressBitmap(bitmap, width, height, ScalingUtils.ScalingLogic.CROP);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static Bitmap compressBitmap(Bitmap srcBitmap, int outWidth, int outHeight, ScalingUtils.ScalingLogic scalingLogic) {
+        Bitmap outBitmap = ScalingUtils.createScaledBitmap(srcBitmap, outWidth, outHeight, scalingLogic);
+        return outBitmap;
     }
 
     private static File createTempImageFile(Context context){

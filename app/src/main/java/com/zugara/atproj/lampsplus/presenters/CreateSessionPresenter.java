@@ -1,20 +1,26 @@
 package com.zugara.atproj.lampsplus.presenters;
 
+import android.content.Context;
+
 import com.zugara.atproj.lampsplus.model.singleton.SessionContext;
 import com.zugara.atproj.lampsplus.views.CreateSessionView;
+
+import javax.inject.Inject;
 
 /**
  * Created by andre on 15-Dec-18.
  */
 
-public class CreateSessionPresenter {
+public class CreateSessionPresenter extends BasePresenter {
+
+    @Inject
+    SessionContext sessionContext;
 
     private CreateSessionView view;
-    private SessionContext sessionContext;
 
-    public CreateSessionPresenter(CreateSessionView view, SessionContext sessionContext) {
+    public CreateSessionPresenter(Context context, CreateSessionView view) {
+        super(context);
         this.view = view;
-        this.sessionContext = sessionContext;
     }
 
     public void create(String name) {

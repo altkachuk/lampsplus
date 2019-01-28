@@ -1,5 +1,7 @@
 package com.zugara.atproj.lampsplus.presenters;
 
+import android.content.Context;
+
 import com.zugara.atproj.lampsplus.fileloader.LocalFileLoader;
 import com.zugara.atproj.lampsplus.model.BaseFile;
 import com.zugara.atproj.lampsplus.fileloader.FileLoaderListener;
@@ -14,7 +16,7 @@ import java.util.List;
  * Created by andre on 15-Dec-18.
  */
 
-public class LampsPresenter {
+public class LampsPresenter extends BasePresenter {
 
     private LampsView lampsView;
     private IFileLoader fileLoader;
@@ -22,7 +24,9 @@ public class LampsPresenter {
     private Folder rootFolder;
     private Folder currentFolder;
 
-    public LampsPresenter(LampsView lampsView) {
+    public LampsPresenter(Context context, LampsView lampsView) {
+        super(context);
+
         this.lampsView = lampsView;
         this.fileLoader = fileLoader;
 
@@ -65,10 +69,10 @@ public class LampsPresenter {
     }
 
     public void selectFile(int position) {
+        if (!(currentFolder.getChild(position) instanceof Folder)) return;
+
         Folder folder = (Folder) currentFolder.getChild(position);
-        if (folder != null) {
-            currentFolder = folder;
-            update(currentFolder);
-        }
+        currentFolder = folder;
+        update(currentFolder);
     }
 }

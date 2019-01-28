@@ -25,9 +25,6 @@ import butterknife.OnClick;
 
 public class CreateSessionFragment extends BaseFragment implements CreateSessionView {
 
-    @Inject
-    SessionContext sessionContext;
-
     @BindView(R.id.sessionNameText)
     EditText sessionNameText;
 
@@ -45,7 +42,7 @@ public class CreateSessionFragment extends BaseFragment implements CreateSession
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        createSessionPresenter = new CreateSessionPresenter(this, sessionContext);
+        createSessionPresenter = new CreateSessionPresenter(getActivity().getApplicationContext(), this);
     }
 
     //-------------------------------------------------------------

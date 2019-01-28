@@ -4,12 +4,13 @@
     <string name="copy">Copy</string>
     <string name="delete">Delete</string>
     <string name="complete">Complete</string>
-    <string name="continue_string">Continue</string>
-    <string name="download">Download</string>
+    <string name="back">Back</string>
+    <string name="next">Next</string>
     <string name="session_name">Session Name</string>
     <string name="name_has_illegal_characters">Name has illegal characters!</string>
     <string name="open">Open</string>
     <string name="send">Send</string>
+    <string name="print">Print</string>
     <string name="finish">Finish</string>
     <string name="loading">Loading...</string>
     <string name="something_is_wrong">Something is wrong. Please try again.</string>
@@ -18,4 +19,14 @@
     <string name="new_session">New Session</string>
     <string name="product_list_error">Product List is not exist!</string>
     <string name="off">Off</string>
+    <string name="total">Total:</string>
+    <string name="tax">Tax:</string>
+    <string name="order_total">Order Total:</string>
+    <string name="image">Image:</string>
+    <string name="sku">SKU:</string>
+    <string name="description">Description:</string>
+    <string name="qty">Qty:</string>
+    <string name="price">Price:</string>
+    <string name="invoice">Invoice</string>
+    <string name="design">Design</string>
 </resources>

@@ -4,8 +4,12 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorSpace;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -13,45 +17,49 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
 import com.zugara.atproj.lampsplus.R;
 import com.zugara.atproj.lampsplus.drag.DragManager;
+import com.zugara.atproj.lampsplus.drag.OnTransformListener;
 import com.zugara.atproj.lampsplus.model.Lamp;
-import com.zugara.atproj.lampsplus.model.singleton.SessionContext;
-import com.zugara.atproj.lampsplus.presenters.ActionPresenter;
+import com.zugara.atproj.lampsplus.presenters.ActionsPresenter;
 import com.zugara.atproj.lampsplus.presenters.CanvasPresenter;
 import com.zugara.atproj.lampsplus.selection.ISelectable;
 import com.zugara.atproj.lampsplus.selection.SelectorManager;
-import com.zugara.atproj.lampsplus.ui.activities.MainActivity;
 import com.zugara.atproj.lampsplus.ui.fragments.base.BaseFragment;
+import com.zugara.atproj.lampsplus.ui.view.DraggableImage;
+import com.zugara.atproj.lampsplus.ui.view.GlowImage;
 import com.zugara.atproj.lampsplus.utils.ImageUtils;
 import com.zugara.atproj.lampsplus.utils.IntentUtils;
 import com.zugara.atproj.lampsplus.utils.Requests;
-import com.zugara.atproj.lampsplus.views.ActionView;
+import com.zugara.atproj.lampsplus.views.ActionsView;
 import com.zugara.atproj.lampsplus.views.CanvasView;
+import com.zugara.atproj.lampsplus.views.InvoiceView;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import butterknife.OnClick;
 
 /**
  * Created by andre on 15-Dec-18.
  */
 
-public class CanvasFragment extends BaseFragment implements CanvasView, ActionView {
+public class CanvasFragment extends BaseFragment implements CanvasView {
 
     @Inject
-    SessionContext sessionContext;
+    Picasso picasso;
 
     @BindView(R.id.screenshotHolder)
     LinearLayout screenshotHolder;
@@ -60,50 +68,22 @@ public class CanvasFragment extends BaseFragment implements CanvasView, ActionVi
     RelativeLayout lampsHolder;
 
     @BindView(R.id.shadowView)
-    RelativeLayout shadowView;
+    ImageView shadowView;
 
-    @BindView(R.id.invoiceText)
-    TextView invoiceText;
-
-    @BindView(R.id.canvasButtonHolder)
-    LinearLayout canvasButtonHolder;
-
-    @BindView(R.id.sessionButtonHolder)
-    LinearLayout sessionButtonHolder;
+    @BindView(R.id.glowHolder)
+    RelativeLayout glowHolder;
 
     @BindView(R.id.backgroundView)
     ImageView backgroundView;
 
-    @BindView(R.id.uploadButton)
-    Button uploadButton;
-
-    @BindView(R.id.mirrorButton)
-    Button mirrorButton;
-
-    @BindView(R.id.copyButton)
-    Button copyButton;
-
-    @BindView(R.id.deleteButton)
-    Button deleteButton;
-
-    @BindView(R.id.shadowButton)
-    Button shadowButton;
-
-    @BindView(R.id.completeButton)
-    Button completeButton;
-
-    @BindView(R.id.continueButton)
-    Button continueButton;
-
-    @BindView(R.id.downloadButton)
-    Button downloadButton;
-
     private ProgressDialog progressDialog;
 
     private CanvasPresenter canvasPresenter;
-    private ActionPresenter actionPresenter;
 
     private SelectorManager selectorManager;
+    private DragManager.DragEventListener dragEventListener;
+
+    private HashMap<Object, GlowImage> glows = new HashMap<>();
 
     //-------------------------------------------------------------
     // Lifecycle override
@@ -118,105 +98,42 @@ public class CanvasFragment extends BaseFragment implements CanvasView, ActionVi
         super.onViewCreated(view, savedInstanceState);
         initPreloader();
 
-        DragManager.DragEventListener dragEventListener = new DragManager.DragEventListener();
+        dragEventListener = new DragManager.DragEventListener();
         lampsHolder.setOnDragListener(dragEventListener);
+
         selectorManager = new SelectorManager();
 
         lampsHolder.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
             @Override
             public void onChildViewAdded(View parent, View child) {
-                ((ISelectable) child).setSelectorManager(selectorManager);
+                final DraggableImage image = (DraggableImage) child;
+                final Lamp lamp = (Lamp) image.getTag();
+                image.setOnTransformListener(new OnTransformListener() {
+                    @Override
+                    public void onMatrixChange(Matrix matrix) {
+                        canvasPresenter.transformEffect(image, matrix);
+                    }
+
+                    @Override
+                    public void onMirror() {
+                        canvasPresenter.mirrorEffect(lamp);
+                    }
+                });
+                image.setSelectorManager(selectorManager);
                 canvasPresenter.changeNumOfChildren(lampsHolder.getChildCount());
+                canvasPresenter.addLamp(child, (Lamp) image.getTag());
             }
 
             @Override
             public void onChildViewRemoved(View parent, View child) {
-                selectorManager.removeItem((ISelectable) child);
+                DraggableImage image = (DraggableImage) child;
+                selectorManager.removeItem(image);
                 canvasPresenter.changeNumOfChildren(lampsHolder.getChildCount());
+                canvasPresenter.removeLamp(child, (Lamp) image.getTag());
             }
         });
 
-        canvasPresenter = new CanvasPresenter(this, selectorManager, dragEventListener);
-        actionPresenter = new ActionPresenter(this, sessionContext);
-
-        canvasPresenter.changeNumOfChildren(lampsHolder.getChildCount());
-    }
-
-    //-------------------------------------------------------------
-    // Handlers
-
-    @OnClick(R.id.uploadButton)
-    public void onClickUploadButton() {
-        canvasPresenter.upload();
-    }
-
-    @OnClick(R.id.mirrorButton)
-    public void onClickMirrorButton() {
-        canvasPresenter.mirror();
-    }
-
-    @OnClick(R.id.copyButton)
-    public void onClickCopyButton() {
-        canvasPresenter.copy();
-    }
-
-    @OnClick(R.id.deleteButton)
-    public void onClickDeleteButton() {
-        canvasPresenter.delete();
-    }
-
-    @OnClick(R.id.shadowButton)
-    public void onClickShadowButon() {
-        canvasPresenter.increaseShadow();
-    }
-
-    @OnClick(R.id.completeButton)
-    public void onCompleteButton() {
-        canvasPresenter.disable();
-
-        List<Lamp> lampList = new ArrayList<>();
-        for (int i = 0; i < lampsHolder.getChildCount(); i++) {
-            View view = lampsHolder.getChildAt(i);
-            Lamp lamp =  (Lamp) view.getTag();
-            lampList.add(lamp);
-        }
-        actionPresenter.complete(lampList);
-    }
-
-    @OnClick(R.id.continueButton)
-    public void onClickContinueButton() {
-        canvasPresenter.enable();
-        actionPresenter.continueAction();
-    }
-
-    @OnClick(R.id.downloadButton)
-    public void onClickDownloadButton() {
-        screenshotHolder.setDrawingCacheEnabled(true);
-        actionPresenter.download(screenshotHolder.getDrawingCache());
-    }
-
-    @OnClick(R.id.openButton)
-    public void onClickOpenButton() {
-        actionPresenter.openImage();
-    }
-
-    @OnClick(R.id.sendButton)
-    public void onClickSendButton() {
-        actionPresenter.sendByEmail();
-    }
-
-    @OnClick(R.id.finishButton)
-    public void onClickFinishButton() {
-        canvasPresenter.enable();
-        canvasPresenter.clear();
-        actionPresenter.finish();
-    }
-
-    @OnClick(R.id.newSessionButton)
-    public void onClickNewSessionButton() {
-        canvasPresenter.enable();
-        canvasPresenter.clear();
-        actionPresenter.newSession();
+        canvasPresenter = new CanvasPresenter(getActivity().getApplicationContext(), this);
     }
 
     //-------------------------------------------------------------
@@ -246,20 +163,19 @@ public class CanvasFragment extends BaseFragment implements CanvasView, ActionVi
     // CanvasView methods
 
     @Override
-    public void enableLampButtons(boolean enable) {
-        mirrorButton.setEnabled(enable);
-        copyButton.setEnabled(enable);
-        deleteButton.setEnabled(enable);
+    public void enable() {
+        selectorManager.setEnabled(true);
+        dragEventListener.setEnabled(true);
+    }
 
-        if (enable) {
-            mirrorButton.setAlpha(0.75f);
-            copyButton.setAlpha(0.75f);
-            deleteButton.setAlpha(0.75f);
-        } else {
-            mirrorButton.setAlpha(1f);
-            copyButton.setAlpha(1f);
-            deleteButton.setAlpha(1f);
-        }
+    @Override
+    public void disable() {
+        selectorManager.setEnabled(false);
+        dragEventListener.setEnabled(false);
+    }
+
+    public SelectorManager getSelectorManager() {
+        return selectorManager;
     }
 
     @Override
@@ -277,10 +193,65 @@ public class CanvasFragment extends BaseFragment implements CanvasView, ActionVi
 
     @Override
     public void setShadow(float percent) {
-        String shadowText = percent == 0 ? getString(R.string.off) : String.valueOf((int)(percent*100f));
-        shadowButton.setText(shadowText);
         int color = Color.argb((int)(255f*percent), 0, 0, 0);
-        shadowView.setBackgroundColor(color);
+        Bitmap shadowBitmap = Bitmap.createBitmap(shadowView.getWidth(), shadowView.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas shadowCanvas = new Canvas(shadowBitmap);
+        shadowCanvas.drawColor(color);
+
+        glowHolder.setDrawingCacheEnabled(true);
+        if (percent == 0f) {
+            shadowView.setImageBitmap(shadowBitmap);
+        } else {
+            drawGlow(shadowBitmap);
+        }
+    }
+
+    private void drawGlow(Bitmap shadowBitmap) {
+        glowHolder.setDrawingCacheEnabled(true);
+        Bitmap glowBitmap = glowHolder.getDrawingCache();
+
+        Bitmap result = Bitmap.createBitmap(shadowView.getWidth(), shadowView.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(result);
+        canvas.drawBitmap(glowBitmap, 0, 0, null);
+
+        Paint paint = new Paint();
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OUT));
+        canvas.drawBitmap(shadowBitmap, 0, 0, paint);
+
+        shadowView.setImageBitmap(result);
+
+        glowHolder.setDrawingCacheEnabled(false);
+    }
+
+    @Override
+    public void addGlow(Object key, Object source) {
+        GlowImage glowImage = new GlowImage(getActivity().getApplicationContext());
+        glowImage.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT));
+        glowHolder.addView(glowImage);
+        if (source instanceof File) {
+            picasso.load((File) source).into(glowImage);
+        }
+
+        glows.put(key, glowImage);
+    }
+
+    @Override
+    public void removeGlow(Object key) {
+        glowHolder.removeView(glows.get(key));
+    }
+
+    @Override
+    public void transformGlow(Object key, Matrix matrix) {
+        if (glows.containsKey(key)) {
+            glows.get(key).setImageMatrix(matrix);
+        }
+    }
+
+    @Override
+    public void mirrorGlow(String id) {
+        glows.get(id).mirror();
     }
 
 
@@ -300,80 +271,29 @@ public class CanvasFragment extends BaseFragment implements CanvasView, ActionVi
     }
 
     @Override
+    public Bitmap createScreenshot() {
+        screenshotHolder.setDrawingCacheEnabled(true);
+        Bitmap bitmap = screenshotHolder.getDrawingCache();
+        return bitmap;
+    }
+
+    @Override
+    public void hide() {
+        getView().setVisibility(View.GONE);
+    }
+
+    @Override
+    public void show() {
+        getView().setVisibility(View.VISIBLE);
+    }
+
+    @Override
     public void clear() {
+        screenshotHolder.setDrawingCacheEnabled(false);
         lampsHolder.removeAllViews();
         backgroundView.setImageBitmap(null);
-    }
-
-    //-------------------------------------------------------------
-    // ActionView methods
-
-    @Override
-    public void gotoCanvasState() {
-        uploadButton.setVisibility(View.VISIBLE);
-        mirrorButton.setVisibility(View.VISIBLE);
-        copyButton.setVisibility(View.VISIBLE);
-        deleteButton.setVisibility(View.VISIBLE);
-        completeButton.setVisibility(View.VISIBLE);
-        continueButton.setVisibility(View.GONE);
-        downloadButton.setVisibility(View.GONE);
-
-        invoiceText.setVisibility(View.GONE);
-        ((MainActivity) getActivity()).showLampsFragment();
-    }
-
-    @Override
-    public void gotoCompleteState() {
-        uploadButton.setVisibility(View.GONE);
-        mirrorButton.setVisibility(View.GONE);
-        copyButton.setVisibility(View.GONE);
-        deleteButton.setVisibility(View.GONE);
-        completeButton.setVisibility(View.GONE);
-        continueButton.setVisibility(View.VISIBLE);
-        downloadButton.setVisibility(View.VISIBLE);
-
-        invoiceText.setVisibility(View.VISIBLE);
-        ((MainActivity) getActivity()).hideLampsFragment();
-    }
-
-    @Override
-    public void showCanvasButtons() {
-        canvasButtonHolder.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hideCanvasButtons() {
-        canvasButtonHolder.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void showSessionButtons() {
-        sessionButtonHolder.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hideSessionButtons() {
-        sessionButtonHolder.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void openImage(String path) {
-        IntentUtils.openImage(getActivity().getApplicationContext(), path);
-    }
-
-    @Override
-    public void setInvoice(String text) {
-        invoiceText.setText(text);
-    }
-
-    @Override
-    public void createEmail(int subjectResId, int messageResId, String attachmentPath) {
-        IntentUtils.createEmail(getActivity().getApplicationContext(), getString(subjectResId), getString(messageResId), attachmentPath);
-    }
-
-    @Override
-    public void showCreateSessionFragment() {
-        ((MainActivity) getActivity()).showCreateSessionFragment();
+        glowHolder.removeAllViews();
+        glows.clear();
     }
 
     //-------------------------------------------------------------

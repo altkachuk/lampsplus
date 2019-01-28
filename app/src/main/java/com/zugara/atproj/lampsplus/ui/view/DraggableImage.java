@@ -2,7 +2,6 @@ package com.zugara.atproj.lampsplus.ui.view;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -18,6 +17,7 @@ import android.view.ViewGroup;
 
 import com.zugara.atproj.lampsplus.drag.DragManager;
 import com.zugara.atproj.lampsplus.drag.IDraggable;
+import com.zugara.atproj.lampsplus.drag.OnTransformListener;
 import com.zugara.atproj.lampsplus.selection.ISelectable;
 import com.zugara.atproj.lampsplus.selection.SelectorManager;
 
@@ -33,6 +33,7 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
     private SelectorManager selectorManager;
     private Bitmap oldBitmap;
     private boolean selected = false;
+    private OnTransformListener onTransformListener;
 
     public DraggableImage(Context context) {
         super(context);
@@ -40,7 +41,6 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
         setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         dragManager = new DragManager();
         setOnTouchListener(this);
-        setScaleType(ScaleType.MATRIX);
     }
 
     public DraggableImage(Context context, AttributeSet attrs) {
@@ -55,6 +55,10 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
         setScaleType(ScaleType.MATRIX);
         dragManager = new DragManager();
         setOnTouchListener(this);
+    }
+
+    public void setOnTransformListener(OnTransformListener onTransformListener) {
+        this.onTransformListener = onTransformListener;
     }
 
     public void setSelectorManager(SelectorManager selectorManager) {
@@ -76,6 +80,10 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
         if (selected) {
             Bitmap highlightedBitmap = highlightImage(oldBitmap, getCurrentScale());
             setImageBitmap(highlightedBitmap);
+        }
+
+        if (onTransformListener != null) {
+            onTransformListener.onMatrixChange(matrix);
         }
     }
 
@@ -112,6 +120,10 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
         if (selected) {
             Bitmap highlightedBitmap = highlightImage(oldBitmap, getCurrentScale());
             setImageBitmap(highlightedBitmap);
+        }
+
+        if (onTransformListener != null) {
+            onTransformListener.onMirror();
         }
     }
 

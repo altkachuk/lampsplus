@@ -57,11 +57,9 @@ public class FileUtils {
             }
             // DownloadsProvider
             else if (isDownloadsDocument(uri)) {
-
                 final String id = DocumentsContract.getDocumentId(uri);
-                final Uri contentUri = ContentUris.withAppendedId(
-                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-
+                Uri downloadUri = Uri.parse("content://downloads/public_downloads");
+                final Uri contentUri = ContentUris.withAppendedId(downloadUri, Long.valueOf(id));
                 return getDataColumn(context, contentUri, null, null);
             }
             // MediaProvider

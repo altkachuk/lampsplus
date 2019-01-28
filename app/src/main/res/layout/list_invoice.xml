@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="38dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp">
+
+    <ImageView
+        android:id="@+id/lampView"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@mipmap/lamp"
+        android:background="@color/colorWhite"/>
+
+    <TextView
+        android:id="@+id/skuText"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:text="sku"
+        android:textSize="12dp"/>
+
+    <TextView
+        android:id="@+id/descriptionText"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:text="some more more more more description"
+        android:textSize="12dp"/>
+
+    <TextView
+        android:id="@+id/quantityText"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:textSize="12dp"/>
+
+    <TextView
+        android:id="@+id/priceText"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:textSize="12dp"/>
+
+</LinearLayout>

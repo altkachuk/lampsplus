@@ -218,7 +218,7 @@ public class DragManager {
 
                 // An unknown action type was received.
                 default:
-                    Log.d("DragDrop Example","Unknown action type received by OnDragListener.");
+                    Log.d("DragDrop Example","Unknown action type received by OnTransformListener.");
                     break;
             }
 

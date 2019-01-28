@@ -60,7 +60,7 @@ public class LampsFragment extends BaseFragment implements LampsView {
         super.onViewCreated(view, savedInstanceState);
         fileAdapter = new FileAdapter(getActivity().getApplicationContext(), new ArrayList<BaseFile>());
         initRecyclerView();
-        lampsPresenter = new LampsPresenter(this);
+        lampsPresenter = new LampsPresenter(getActivity().getApplicationContext(), this);
     }
 
     //-------------------------------------------------------------
