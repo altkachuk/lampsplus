@@ -181,9 +181,14 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
     }
 
     private float getCurrentScale() {
-        float[] fMatrix = new float[9];
-        getImageMatrix().getValues(fMatrix);
-        return fMatrix[Matrix.MSCALE_X];
+        float[] values = new float[9];
+        Matrix matrix = getImageMatrix();
+        matrix.getValues(values);
+        // calculate real scale
+        float scaleX = values[Matrix.MSCALE_X];
+        float skewY = values[Matrix.MSKEW_Y];
+        float realScale = (float) Math.sqrt(scaleX * scaleX + skewY * skewY);
+        return realScale;
     }
 
     public void deselect() {
