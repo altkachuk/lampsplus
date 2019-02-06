@@ -7,8 +7,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
 import com.zugara.atproj.lampsplus.ui.activities.base.BaseActivity;
-import com.zugara.atproj.lampsplus.utils.ApplicationUtil;
-import com.zugara.atproj.lampsplus.utils.IntentUtils;
+import com.zugara.atproj.lampsplus.utils.ActivityHelper;
 import com.zugara.atproj.lampsplus.utils.Requests;
 
 /**
@@ -22,7 +21,7 @@ public class SplashActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         if (checkStoragePermissions()) {
-            ApplicationUtil.startActivity(this, MainActivity.class);
+            ActivityHelper.startActivity(this, MainActivity.class);
         } else {
             ActivityCompat.requestPermissions(this,
                     new String[]{
@@ -40,7 +39,7 @@ public class SplashActivity extends BaseActivity {
                 int res = grantResults[i];
                 if (permission.equals(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) && res == PackageManager.PERMISSION_GRANTED) {
                     if (checkStoragePermissions()) {
-                        ApplicationUtil.startActivity(this, MainActivity.class);
+                        ActivityHelper.startActivity(this, MainActivity.class);
                         return;
                     }
                 }

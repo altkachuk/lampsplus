@@ -21,7 +21,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:text="Some Folder"/>
+            android:text="Some Folder"
+            android:textStyle="bold" />
 
     </LinearLayout>
 

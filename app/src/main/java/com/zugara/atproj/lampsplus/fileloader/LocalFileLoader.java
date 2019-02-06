@@ -1,5 +1,6 @@
 package com.zugara.atproj.lampsplus.fileloader;
 
+import android.graphics.Point;
 import android.util.Log;
 
 import com.zugara.atproj.lampsplus.model.BaseFile;
@@ -27,7 +28,7 @@ import java.util.List;
 public class LocalFileLoader implements IFileLoader {
 
     private final String TAG = "LocalFileLoader";
-    private final List<String> file_exception = new ArrayList<String>(){{add(".xls");add("effects");}};
+    private final List<String> file_exception = new ArrayList<String>(){{add(".xls");add("effects");add("ies_light");}};
 
     private HashMap<String, File> effectList;
     private HashMap<String, Lamp> lampList;
@@ -71,7 +72,7 @@ public class LocalFileLoader implements IFileLoader {
     }
 
     private void parseEffects(File parentDir) {
-        List<File> effects = getListFiles(new File(parentDir, "effects"));
+        List<File> effects = getListFiles(new File(parentDir, "ies_light"));
         effectList = new HashMap<>();
         for (File effect : effects) {
             String name = effect.getName();
@@ -167,15 +168,20 @@ public class LocalFileLoader implements IFileLoader {
         if (lampList.containsKey(id)) {
             Lamp configLamp = lampList.get(id);
             lamp.setId(configLamp.getId());
+            lamp.setLightId(configLamp.getLightId());
+            lamp.setPoint(configLamp.getPoint());
+            lamp.setRotation(configLamp.getRotation());
+            lamp.setScale(configLamp.getScale());
             lamp.setDescription(configLamp.getDescription());
             lamp.setPrice(configLamp.getPrice());
-        }
-        // add glow
-        if (effectList.containsKey(id)) {
-            BaseFile glow = new BaseFile();
-            glow.setName("glow");
-            glow.setSource(effectList.get(id));
-            lamp.setGlow(glow);
+
+            // add glow
+            if (effectList.containsKey(lamp.getLightId())) {
+                BaseFile glow = new BaseFile();
+                glow.setName("glow");
+                glow.setSource(effectList.get(lamp.getLightId()));
+                lamp.setGlow(glow);
+            }
         }
         return lamp;
     }
@@ -194,31 +200,60 @@ public class LocalFileLoader implements IFileLoader {
             HSSFSheet sheet = workbook.getSheetAt(0);
 
             int rowIndex = 0;
-            int cellIndex = 0;
+            //int cellIndex = 0;
             for (Iterator<Row> rowIterator = sheet.rowIterator(); rowIterator.hasNext(); ) {
                 Row row = rowIterator.next();
                 if (rowIndex != 0) {
                     String id = "";
+                    String lightId = null;
+                    Point point = new Point();
+                    float rotation = 0f;
+                    float scale = 1f;
                     String description = "";
                     float price = 0.0f;
-                    for (Iterator<Cell> cellIterator = row.cellIterator(); cellIterator.hasNext(); ) {
-                        Cell cell = cellIterator.next();
-                        if (cellIndex == 0) {
-                            id = cell.toString();
-                        } else if (cellIndex == 1) {
-                            description = cell.toString();
-                        } else if (cellIndex == 2) {
-                            price = Float.parseFloat(cell.toString());
+
+                    for (int i = 0; i < 7; i++) {
+                        Cell cell = row.getCell(i);
+                        if (cell != null) {
+                            switch (i) {
+                                case 0:
+                                    id = cell.toString();
+                                    break;
+                                case 1:
+                                    lightId = cell.toString();
+                                    break;
+                                case 2:
+                                    String[] coord = cell.toString().split(";");
+                                    if (coord.length > 1) {
+                                        point.set(Integer.parseInt(coord[0]), Integer.parseInt(coord[1]));
+                                    }
+                                    break;
+                                case 3:
+                                    rotation = Float.parseFloat(cell.toString());
+                                    break;
+                                case 4:
+                                    scale = Float.parseFloat(cell.toString());
+                                    break;
+                                case 5:
+                                    description = cell.toString();
+                                    break;
+                                case 6:
+                                    price = Float.parseFloat(cell.toString());
+                                    break;
+                            }
                         }
-                        cellIndex++;
                     }
+
                     Lamp lamp = new Lamp();
                     lamp.setId(id);
+                    lamp.setLightId(lightId);
+                    lamp.setPoint(point);
+                    lamp.setRotation((int)rotation);
+                    lamp.setScale(scale);
                     lamp.setDescription(description);
                     lamp.setPrice(price);
                     lampList.put(id, lamp);
                 }
-                cellIndex = 0;
                 rowIndex++;
             }
 

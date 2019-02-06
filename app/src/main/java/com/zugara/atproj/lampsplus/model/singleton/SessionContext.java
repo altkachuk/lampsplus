@@ -5,7 +5,9 @@ import android.graphics.Bitmap;
 import com.zugara.atproj.lampsplus.model.InvoiceItem;
 import com.zugara.atproj.lampsplus.model.Lamp;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,10 +17,11 @@ import java.util.List;
 public class SessionContext {
 
     private String sessionName;
+    private String timestamp;
     private String lastImagePath;
     private List<InvoiceItem> invoiceItems = new ArrayList<>();
-    private Bitmap designBitmap;
-    private Bitmap invoiceBitmap;
+    private String designPath;
+    private String invoicePath;
 
     public String getSessionName() {
         return sessionName;
@@ -26,6 +29,11 @@ public class SessionContext {
 
     public void setSessionName(String value) {
         sessionName = value;
+        timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+    }
+
+    public String getTimestamp() {
+        return timestamp;
     }
 
     public String getLastImagePath() {
@@ -40,32 +48,22 @@ public class SessionContext {
         return invoiceItems;
     }
 
-    public void addLampToInvoiceItem(Lamp lamp) {
-        boolean exist = false;
-        for (InvoiceItem invoiceItem : invoiceItems) {
-            if (invoiceItem.getLamp().getId().equals(lamp.getId())) {
-                exist = true;
-                invoiceItem.setQuantity(invoiceItem.getQuantity() + 1);
-                break;
-            }
-        }
-        if (!exist) {
-            InvoiceItem invoiceItem = new InvoiceItem();
-            invoiceItem.setLamp(lamp);
-            invoiceItem.setQuantity(1);
-            invoiceItems.add(invoiceItem);
-        }
-    }
-
-    public void removeLampFromInvoiceItem(Lamp lamp) {
-        for (InvoiceItem invoiceItem : invoiceItems) {
-            if (invoiceItem.getLamp().getId().equals(lamp.getId())) {
-                if (invoiceItem.getQuantity() > 1) {
-                    invoiceItem.setQuantity(invoiceItem.getQuantity()-1);
-                } else {
-                    invoiceItems.remove(invoiceItem);
+    public void setInvoiceItemsProvider(List<Lamp> lamps) {
+        invoiceItems.clear();
+        for (Lamp lamp : lamps) {
+            boolean exist = false;
+            for (InvoiceItem invoiceItem : invoiceItems) {
+                if (invoiceItem.getLamp().getId().equals(lamp.getId())) {
+                    exist = true;
+                    invoiceItem.setQuantity(invoiceItem.getQuantity() + 1);
+                    break;
                 }
-                break;
+            }
+            if (!exist) {
+                InvoiceItem invoiceItem = new InvoiceItem();
+                invoiceItem.setLamp(lamp);
+                invoiceItem.setQuantity(1);
+                invoiceItems.add(invoiceItem);
             }
         }
     }
@@ -74,19 +72,19 @@ public class SessionContext {
         invoiceItems.clear();
     }
 
-    public Bitmap getDesignBitmap() {
-        return designBitmap;
+    public String getDesignPath() {
+        return designPath;
     }
 
-    public void setDesignBitmap(Bitmap designBitmap) {
-        this.designBitmap = designBitmap;
+    public void setDesignPath(String designPath) {
+        this.designPath = designPath;
     }
 
-    public Bitmap getInvoiceBitmap() {
-        return invoiceBitmap;
+    public String getInvoicePath() {
+        return invoicePath;
     }
 
-    public void setInvoiceBitmap(Bitmap invoiceBitmap) {
-        this.invoiceBitmap = invoiceBitmap;
+    public void setInvoicePath(String invoicePath) {
+        this.invoicePath = invoicePath;
     }
 }

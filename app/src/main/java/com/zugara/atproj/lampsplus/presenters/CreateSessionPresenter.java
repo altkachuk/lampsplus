@@ -36,7 +36,7 @@ public class CreateSessionPresenter extends BasePresenter {
     }
 
     private boolean isSessionNameLegal(String name) {
-        if (name.length() < 4) return false;
+        if (name.length() < 1) return false;
 
         String reservedChars = "?:\"*|/\\<>";
         for (int i = 0;  i < name.length(); i++) {

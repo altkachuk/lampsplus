@@ -9,8 +9,12 @@ import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.print.PrintManager;
 import android.support.v4.content.FileProvider;
+import android.support.v4.print.PrintHelper;
 import android.util.Log;
+
+import com.zugara.atproj.lampsplus.print.LPPrintAdatapter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -57,6 +61,33 @@ public class IntentUtils {
         emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, attachments);
         context.startActivity(emailIntent);
     }
+
+    /*public static void printImages(Activity activity, List<String> sources) {
+        PrintHelper photoPrinter = new PrintHelper(activity);
+        photoPrinter.setScaleMode(PrintHelper.SCALE_MODE_FILL);
+
+        for (String url : sources) {
+            Uri uri = uriFromFile(activity, new File(url));
+            try {
+                photoPrinter.printBitmap("design", uri);
+            } catch (FileNotFoundException e) {
+                ;
+            }
+        }
+    }*/
+
+    public static void printImages(Activity activity, List<String> sources) {
+        // Get a PrintManager instance
+        PrintManager printManager = (PrintManager) activity.getSystemService(Context.PRINT_SERVICE);
+
+        // Set job name, which will be displayed in the print queue
+        String jobName = "Design";
+
+        // Start a print job, passing in a PrintDocumentAdapter implementation
+        // to handle the generation of a print document
+        printManager.print(jobName, new LPPrintAdatapter(activity, sources), null);
+    }
+
 
 
     private static Uri uriFromFile(Context context, File file) {

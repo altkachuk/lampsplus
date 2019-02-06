@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
@@ -19,9 +20,12 @@ public class DragManager {
 
     private final float scale_factor = 1.0f;
 
+    private Rect bounddary = new Rect(0, 0, 600, 600);
+
     // these matrices will be used to move and zoom image
     private Matrix matrix = new Matrix();
     private Matrix savedMatrix = new Matrix();
+    private Matrix savedDragMatrix = new Matrix();
 
     // remember some things for zooming
     private PointF startPos;
@@ -39,52 +43,18 @@ public class DragManager {
         mode = DragMode.NONE;
     }
 
+    public void setBound(Rect value) {
+        bounddary = value;
+    }
+
+    public void setBound(int left, int top, int right, int bottom) {
+        bounddary = new Rect(left, top, right, bottom);
+    }
+
     public void setMatrix(Matrix matrix) {
         this.matrix.set(matrix);
         savedMatrix.set(matrix);
     }
-
-    /*public void onTouch(IDraggable view, MotionEvent event) {
-        switch (event.getAction() & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_POINTER_DOWN:
-                mode = DragMode.DRAG;
-
-                savedMatrix.set(matrix);
-
-                TouchUtil.midpoint(startPos, event);
-                startDist = TouchUtil.spacing(event);
-                startRot = TouchUtil.rotation(event);
-                break;
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_POINTER_UP:
-                mode = DragMode.NONE;
-                break;
-            case MotionEvent.ACTION_MOVE:
-                if (mode == DragMode.DRAG) {
-                    matrix.set(savedMatrix);
-                    TouchUtil.midpoint(currentPos, event);
-
-                    // translate
-                    matrix.postTranslate(currentPos.x - startPos.x, currentPos.y - startPos.y);
-
-                    if (startDist > 20f) {
-                        // scale
-                        float newDist = TouchUtil.spacing(event);
-                        float scale = (newDist / startDist - 1f) * scale_factor + 1f;
-                        matrix.postScale(scale, scale, currentPos.x, currentPos.y);
-
-                        // rotate
-                        float newRot = TouchUtil.rotation(event);
-                        float r = newRot - startRot;
-                        matrix.postRotate(r, currentPos.x, currentPos.y);
-                    }
-
-                }
-                break;
-        }
-
-        view.setMatrix(matrix);
-    }*/
 
     public void onTouch(IDraggable view, MotionEvent event) {
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
@@ -106,10 +76,23 @@ public class DragManager {
             case MotionEvent.ACTION_MOVE:
                 if (mode == DragMode.DRAG) {
                     matrix.set(savedMatrix);
-                    // translate
+                    float[] values = new float[9];
+                    matrix.getValues(values);
+                    float x = values[Matrix.MTRANS_X];
+                    float y = values[Matrix.MTRANS_Y];
                     float dx = event.getX() - startPos.x;
                     float dy = event.getY() - startPos.y;
-                    matrix.postTranslate(dx, dy);
+
+                    if (x+dx > bounddary.left && x+dx < bounddary.right
+                            &&  y+dy > bounddary.top && y+dy < bounddary.bottom) {
+                        // translate
+                        matrix.postTranslate(dx, dy);
+                        savedDragMatrix.set(matrix);
+                    } else {
+                        savedMatrix.set(savedDragMatrix);
+                        matrix.set(savedDragMatrix);
+                        startPos.set(event.getX(), event.getY());
+                    }
                 } else if (mode == DragMode.ZOOM) {
                     float[] src = new float[]{view.getSrcWidth()/2, view.getSrcHeight()/2};
                     float[] dst = new float[2];

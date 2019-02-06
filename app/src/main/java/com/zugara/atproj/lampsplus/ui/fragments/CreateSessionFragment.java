@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -12,12 +13,14 @@ import com.zugara.atproj.lampsplus.R;
 import com.zugara.atproj.lampsplus.model.singleton.SessionContext;
 import com.zugara.atproj.lampsplus.presenters.CreateSessionPresenter;
 import com.zugara.atproj.lampsplus.ui.fragments.base.BaseFragment;
+import com.zugara.atproj.lampsplus.utils.ActivityHelper;
 import com.zugara.atproj.lampsplus.views.CreateSessionView;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import butterknife.OnEditorAction;
 
 /**
  * Created by andre on 21-Dec-18.
@@ -48,8 +51,20 @@ public class CreateSessionFragment extends BaseFragment implements CreateSession
     //-------------------------------------------------------------
     // Handlers
 
+    @OnEditorAction(R.id.sessionNameText)
+    public boolean onTextAction(int actionId) {
+        if (actionId == EditorInfo.IME_ACTION_DONE) {
+            ActivityHelper.hideKeyboard(getActivity());
+            createSessionPresenter.create(sessionNameText.getText().toString());
+            return true;
+        }
+
+        return false;
+    }
+
     @OnClick(R.id.createButton)
     public void onClickCreateButton() {
+        ActivityHelper.hideKeyboard(getActivity());
         createSessionPresenter.create(sessionNameText.getText().toString());
     }
 

@@ -11,11 +11,7 @@ import java.util.List;
  */
 
 public interface InvoiceView extends LoadingView {
-    void setDataProvider(List<InvoiceItem> invoiceItems);
-    void setTotal(String text);
-    void setTax(String text);
-    void setOrderTotal(String text);
-    Bitmap createScreenshot();
+    void setInvoiceBitmap(Bitmap bitmap);
     void show();
     void hide();
     void clear();

@@ -5,7 +5,7 @@ android {
     buildToolsVersion "27.0.3"
     defaultConfig {
         applicationId "com.zugara.atproj.lampsplus"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -101,4 +101,9 @@ dependencies {
 
     // Event Bus
     implementation 'org.greenrobot:eventbus:3.1.1'
+
+    // Firebase
+    implementation 'com.google.firebase:firebase-core:16.0.1'
 }
+
+apply plugin: 'com.google.gms.google-services'

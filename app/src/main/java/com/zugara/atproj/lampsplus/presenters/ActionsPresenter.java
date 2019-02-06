@@ -1,16 +1,20 @@
 package com.zugara.atproj.lampsplus.presenters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
+import android.support.v4.print.PrintHelper;
 import android.util.Log;
 
 import com.zugara.atproj.lampsplus.R;
+import com.zugara.atproj.lampsplus.events.BackToDesignEvent;
 import com.zugara.atproj.lampsplus.events.ChangeLampsEvent;
 import com.zugara.atproj.lampsplus.events.ChangeShadowEvent;
 import com.zugara.atproj.lampsplus.events.ClearEvent;
+import com.zugara.atproj.lampsplus.events.CompleteLightEvent;
 import com.zugara.atproj.lampsplus.events.CopyLampEvent;
-import com.zugara.atproj.lampsplus.events.CreateScreenshotEvent;
+import com.zugara.atproj.lampsplus.events.CompleteDesignEvent;
 import com.zugara.atproj.lampsplus.events.DeleteLampEvent;
 import com.zugara.atproj.lampsplus.events.DisableCanvasEvent;
 import com.zugara.atproj.lampsplus.events.EnableCanvasEvent;
@@ -52,7 +56,6 @@ public class ActionsPresenter extends BasePresenter {
 
     private ActionsView actionView;
     private float shadowPercent = 0f;
-    private List<String> attachments = new ArrayList<>();
 
     public ActionsPresenter(Context context, ActionsView actionView) {
         super(context);
@@ -96,7 +99,8 @@ public class ActionsPresenter extends BasePresenter {
     }
 
     public void increaseShadow() {
-        if (shadowPercent == 0f) shadowPercent = 0.6f;
+        if (shadowPercent == 0f) shadowPercent = 0.3f;
+        else if (shadowPercent == 0.3f) shadowPercent = 0.6f;
         else if (shadowPercent == 0.6f) shadowPercent = 0.85f;
         else shadowPercent = 0f;
 
@@ -114,11 +118,6 @@ public class ActionsPresenter extends BasePresenter {
     public void clear() {
         sessionContext.clearInvoiceItems();
         clearShadow();
-        for (String path : attachments) {
-            File file = new File(path);
-            file.delete();
-        }
-        attachments.clear();
 
         EventBus.getDefault().post(new ClearEvent());
     }
@@ -129,33 +128,24 @@ public class ActionsPresenter extends BasePresenter {
 
     public void complete() {
         actionView.gotoCompleteState();
+        EventBus.getDefault().post(new CompleteDesignEvent());
     }
 
     public void next() {
         gotoInvoice();
-        EventBus.getDefault().post(new CreateScreenshotEvent());
 
         actionView.hideCanvasButtons();
         actionView.showSessionButtons();
+        EventBus.getDefault().post(new CompleteLightEvent());
     }
 
-    public String downloadImage(final Bitmap srcBitmap, String prefix) {
-        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
-        path += "/" + sessionContext.getSessionName() + "_" + prefix;
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        path += "_" + timeStamp;
-        path += ".jpg";
+    public void backToDesign() {
+        gotoDesign();
 
+        actionView.showCanvasButtons();
+        actionView.hideSessionButtons();
 
-        final String fPath = path;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Bitmap bitmap = Bitmap.createBitmap(srcBitmap);
-                saveImage(fPath, bitmap);
-            }
-        }).start();
-        return path;
+        EventBus.getDefault().post(new BackToDesignEvent());
     }
 
     public void gotoInvoice() {
@@ -172,49 +162,26 @@ public class ActionsPresenter extends BasePresenter {
 
     public void sendByEmail() {
         actionView.showPreloader();
-        if (attachments.size() == 0) {
-            String designPath = downloadImage(sessionContext.getDesignBitmap(), "design");
-            if (designPath != null) {
-                attachments.add(designPath);
-            }
-            String invoicePath = downloadImage(sessionContext.getInvoiceBitmap(), "invoice");
-            if (invoicePath != null) {
-                attachments.add(invoicePath);
-            }
-        }
 
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 actionView.hidePreloader();
+                List<String> attachments = new ArrayList<>();
+                attachments.add(sessionContext.getDesignPath());
+                attachments.add(sessionContext.getInvoicePath());
                 IntentUtils.createEmail(context, context.getString(R.string.email_subject), context.getString(R.string.email_message), attachments);
             }
-        }, 1000);
+        }, 200);
 
     }
 
-    public void print() {
-        actionView.showPreloader();
-        if (attachments.size() == 0) {
-            String designPath = downloadImage(sessionContext.getDesignBitmap(), "design");
-            if (designPath != null) {
-                attachments.add(designPath);
-            }
-            String invoicePath = downloadImage(sessionContext.getInvoiceBitmap(), "invoice");
-            if (invoicePath != null) {
-                attachments.add(invoicePath);
-            }
-        }
-
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                actionView.hidePreloader();
-                // TODO: print
-            }
-        }, 1000);
+    public void print(Activity activity) {
+        List<String> images = new ArrayList<>();
+        images.add(sessionContext.getDesignPath());
+        images.add(sessionContext.getInvoicePath());
+        IntentUtils.printImages(activity, images);
     }
 
     public void finish() {
@@ -227,25 +194,5 @@ public class ActionsPresenter extends BasePresenter {
     public void newSession() {
         finish();
         actionView.showCreateSessionFragment();
-    }
-
-    private boolean saveImage(String path, Bitmap bitmap) {
-        File file = new File(path);
-
-        try {
-            FileOutputStream outputStream = new FileOutputStream(file);
-            int quality = 100;
-            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
-            outputStream.flush();
-            outputStream.close();
-        } catch (FileNotFoundException e) {
-            Log.d(TAG, e.getMessage());
-            return false;
-        } catch (IOException e) {
-            Log.d(TAG, e.getMessage());
-            return false;
-        }
-
-        return true;
     }
 }

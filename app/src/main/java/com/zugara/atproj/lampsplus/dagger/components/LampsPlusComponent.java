@@ -14,7 +14,6 @@ import com.zugara.atproj.lampsplus.ui.fragments.CreateSessionFragment;
 import com.zugara.atproj.lampsplus.ui.fragments.InvoiceFragment;
 import com.zugara.atproj.lampsplus.ui.fragments.LampsFragment;
 import com.zugara.atproj.lampsplus.ui.viewholders.FileViewHolder;
-import com.zugara.atproj.lampsplus.ui.viewholders.InvoiceViewHolder;
 
 import javax.inject.Singleton;
 
@@ -53,5 +52,4 @@ public interface LampsPlusComponent {
 
     // viewholders
     void inject(FileViewHolder fileViewHolder);
-    void inject(InvoiceViewHolder invoiceViewHolder);
 }

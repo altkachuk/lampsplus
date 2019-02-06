@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
@@ -17,7 +18,6 @@ import android.view.ViewGroup;
 
 import com.zugara.atproj.lampsplus.drag.DragManager;
 import com.zugara.atproj.lampsplus.drag.IDraggable;
-import com.zugara.atproj.lampsplus.drag.OnTransformListener;
 import com.zugara.atproj.lampsplus.selection.ISelectable;
 import com.zugara.atproj.lampsplus.selection.SelectorManager;
 
@@ -33,7 +33,8 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
     private SelectorManager selectorManager;
     private Bitmap oldBitmap;
     private boolean selected = false;
-    private OnTransformListener onTransformListener;
+    private boolean isMirrored = false;
+    private boolean touchEnabled = true;
 
     public DraggableImage(Context context) {
         super(context);
@@ -57,10 +58,6 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
         setOnTouchListener(this);
     }
 
-    public void setOnTransformListener(OnTransformListener onTransformListener) {
-        this.onTransformListener = onTransformListener;
-    }
-
     public void setSelectorManager(SelectorManager selectorManager) {
         this.selectorManager = selectorManager;
         selectorManager.addItem(this);
@@ -68,9 +65,22 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
 
     @Override
     public boolean onTouch(View view, MotionEvent event) {
+        if (!touchEnabled) return false;
+
         dragManager.onTouch(this, event);
         selectorManager.onTouch(this, event);
         return true;
+    }
+
+    @Override
+    public void setBound(Rect value) {
+        dragManager.setBound(value);
+    }
+
+    @Override
+    public void setBound(int left, int top, int right, int bottom) {
+        Rect boundary = new Rect(left, top, right, bottom);
+        dragManager.setBound(boundary);
     }
 
     @Override
@@ -81,10 +91,6 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
             Bitmap highlightedBitmap = highlightImage(oldBitmap, getCurrentScale());
             setImageBitmap(highlightedBitmap);
         }
-
-        if (onTransformListener != null) {
-            onTransformListener.onMatrixChange(matrix);
-        }
     }
 
     @Override
@@ -93,6 +99,7 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
         return bitmap.getWidth();
     }
 
+    @Override
     public float getSrcHeight() {
         Bitmap bitmap = ((BitmapDrawable) getDrawable()).getBitmap();
         return bitmap.getHeight();
@@ -110,6 +117,16 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
     }
 
     @Override
+    public void enableTouch() {
+        touchEnabled = true;
+    }
+
+    @Override
+    public void disableTouch() {
+        touchEnabled = false;
+    }
+
+    @Override
     public void mirror() {
         Matrix matrix = new Matrix();
         matrix.preScale(-1.0f, 1.0f);
@@ -122,9 +139,11 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
             setImageBitmap(highlightedBitmap);
         }
 
-        if (onTransformListener != null) {
-            onTransformListener.onMirror();
-        }
+        isMirrored = !isMirrored;
+    }
+
+    public boolean isMirrored() {
+        return isMirrored;
     }
 
     @Override

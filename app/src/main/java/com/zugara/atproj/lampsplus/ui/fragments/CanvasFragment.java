@@ -10,6 +10,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -25,9 +26,7 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.zugara.atproj.lampsplus.R;
 import com.zugara.atproj.lampsplus.drag.DragManager;
-import com.zugara.atproj.lampsplus.drag.OnTransformListener;
 import com.zugara.atproj.lampsplus.model.Lamp;
-import com.zugara.atproj.lampsplus.presenters.ActionsPresenter;
 import com.zugara.atproj.lampsplus.presenters.CanvasPresenter;
 import com.zugara.atproj.lampsplus.selection.ISelectable;
 import com.zugara.atproj.lampsplus.selection.SelectorManager;
@@ -37,16 +36,12 @@ import com.zugara.atproj.lampsplus.ui.view.GlowImage;
 import com.zugara.atproj.lampsplus.utils.ImageUtils;
 import com.zugara.atproj.lampsplus.utils.IntentUtils;
 import com.zugara.atproj.lampsplus.utils.Requests;
-import com.zugara.atproj.lampsplus.views.ActionsView;
 import com.zugara.atproj.lampsplus.views.CanvasView;
-import com.zugara.atproj.lampsplus.views.InvoiceView;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.inject.Inject;
 
@@ -67,7 +62,7 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
     @BindView(R.id.lampsHolder)
     RelativeLayout lampsHolder;
 
-    @BindView(R.id.shadowView)
+    @BindView(R.id.glowView)
     ImageView shadowView;
 
     @BindView(R.id.glowHolder)
@@ -107,21 +102,9 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
             @Override
             public void onChildViewAdded(View parent, View child) {
                 final DraggableImage image = (DraggableImage) child;
-                final Lamp lamp = (Lamp) image.getTag();
-                image.setOnTransformListener(new OnTransformListener() {
-                    @Override
-                    public void onMatrixChange(Matrix matrix) {
-                        canvasPresenter.transformEffect(image, matrix);
-                    }
-
-                    @Override
-                    public void onMirror() {
-                        canvasPresenter.mirrorEffect(lamp);
-                    }
-                });
+                image.setBound(0,0,lampsHolder.getWidth(), lampsHolder.getHeight()-100);
                 image.setSelectorManager(selectorManager);
                 canvasPresenter.changeNumOfChildren(lampsHolder.getChildCount());
-                canvasPresenter.addLamp(child, (Lamp) image.getTag());
             }
 
             @Override
@@ -129,11 +112,10 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
                 DraggableImage image = (DraggableImage) child;
                 selectorManager.removeItem(image);
                 canvasPresenter.changeNumOfChildren(lampsHolder.getChildCount());
-                canvasPresenter.removeLamp(child, (Lamp) image.getTag());
             }
         });
 
-        canvasPresenter = new CanvasPresenter(getActivity().getApplicationContext(), this);
+        canvasPresenter = new CanvasPresenter(getActivity(), this);
     }
 
     //-------------------------------------------------------------
@@ -166,12 +148,21 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
     public void enable() {
         selectorManager.setEnabled(true);
         dragEventListener.setEnabled(true);
+
+        for (int i = 0; i < lampsHolder.getChildCount(); i++) {
+            DraggableImage image = (DraggableImage) lampsHolder.getChildAt(i);
+            image.enableTouch();
+        }
     }
 
     @Override
     public void disable() {
         selectorManager.setEnabled(false);
         dragEventListener.setEnabled(false);
+        for (int i = 0; i < lampsHolder.getChildCount(); i++) {
+            DraggableImage image = (DraggableImage) lampsHolder.getChildAt(i);
+            image.disableTouch();
+        }
     }
 
     public SelectorManager getSelectorManager() {
@@ -191,67 +182,60 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
         }
     }
 
-    @Override
-    public void setShadow(float percent) {
-        int color = Color.argb((int)(255f*percent), 0, 0, 0);
-        Bitmap shadowBitmap = Bitmap.createBitmap(shadowView.getWidth(), shadowView.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas shadowCanvas = new Canvas(shadowBitmap);
-        shadowCanvas.drawColor(color);
+    public void getLampData(List<Lamp> lamps, List<Matrix> matrices, List<Boolean> mirroredList, List<Integer> sourceWidthList) {
+        for (int i = 0; i < lampsHolder.getChildCount(); i++) {
+            DraggableImage image = (DraggableImage) lampsHolder.getChildAt(i);
 
-        glowHolder.setDrawingCacheEnabled(true);
-        if (percent == 0f) {
-            shadowView.setImageBitmap(shadowBitmap);
-        } else {
-            drawGlow(shadowBitmap);
+            lamps.add((Lamp) image.getTag());
+            matrices.add(image.getImageMatrix());
+            mirroredList.add(image.isMirrored());
+            sourceWidthList.add(((BitmapDrawable)image.getDrawable()).getBitmap().getWidth());
         }
     }
 
-    private void drawGlow(Bitmap shadowBitmap) {
+    @Override
+    public void setGlowBitmap(Bitmap bitmap) {
+        shadowView.setImageBitmap(bitmap);
+    }
+
+    @Override
+    public Bitmap getGlowSourceBitmap() {
         glowHolder.setDrawingCacheEnabled(true);
-        Bitmap glowBitmap = glowHolder.getDrawingCache();
+        Bitmap bitmap = glowHolder.getDrawingCache();
+        return bitmap;
+    }
 
-        Bitmap result = Bitmap.createBitmap(shadowView.getWidth(), shadowView.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(result);
-        canvas.drawBitmap(glowBitmap, 0, 0, null);
+    @Override
+    public int getWidth() {
+        return shadowView.getWidth();
+    }
 
-        Paint paint = new Paint();
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OUT));
-        canvas.drawBitmap(shadowBitmap, 0, 0, paint);
+    @Override
+    public int getHeight() {
+        return shadowView.getHeight();
+    }
 
-        shadowView.setImageBitmap(result);
+    @Override
+    public void setGlows(List<Object> sources, List<Matrix> matrices) {
+        for (int i  = 0; i < sources.size(); i++) {
+            Object source = sources.get(i);
+            Matrix matrix = matrices.get(i);
+            GlowImage glowImage = new GlowImage(getActivity().getApplicationContext());
+            glowImage.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT));
+            glowHolder.addView(glowImage);
+            if (source instanceof File) {
+                picasso.load((File) source).into(glowImage);
+            }
+            glowImage.setImageMatrix(matrix);
+        }
+    }
 
+    @Override
+    public void clearGlow() {
         glowHolder.setDrawingCacheEnabled(false);
-    }
-
-    @Override
-    public void addGlow(Object key, Object source) {
-        GlowImage glowImage = new GlowImage(getActivity().getApplicationContext());
-        glowImage.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT));
-        glowHolder.addView(glowImage);
-        if (source instanceof File) {
-            picasso.load((File) source).into(glowImage);
-        }
-
-        glows.put(key, glowImage);
-    }
-
-    @Override
-    public void removeGlow(Object key) {
-        glowHolder.removeView(glows.get(key));
-    }
-
-    @Override
-    public void transformGlow(Object key, Matrix matrix) {
-        if (glows.containsKey(key)) {
-            glows.get(key).setImageMatrix(matrix);
-        }
-    }
-
-    @Override
-    public void mirrorGlow(String id) {
-        glows.get(id).mirror();
+        glowHolder.removeAllViews();
     }
 
 

@@ -22,11 +22,13 @@ public interface CanvasView extends LoadingView {
     void deleteLamp(ISelectable item);
     void addLamp(ISelectable item);
     void uploadBackground();
-    void setShadow(float percent);
-    void addGlow(Object key, Object source);
-    void removeGlow(Object key);
-    void transformGlow(Object key, Matrix matrix);
-    void mirrorGlow(String id);
+    void getLampData(List<Lamp> lamps, List<Matrix> matrices, List<Boolean> mirroredList, List<Integer> sourceWidthList);
+    void setGlowBitmap(Bitmap bitmap);
+    Bitmap getGlowSourceBitmap();
+    int getWidth();
+    int getHeight();
+    void setGlows(List<Object> sources, List<Matrix> matrices);
+    void clearGlow();
     Bitmap createScreenshot();
     void hide();
     void show();

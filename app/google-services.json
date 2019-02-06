@@ -1,0 +1,73 @@
+{
+  "project_info": {
+    "project_number": "675585882135",
+    "firebase_url": "https://lampsplus-ba7a2.firebaseio.com",
+    "project_id": "lampsplus-ba7a2",
+    "storage_bucket": "lampsplus-ba7a2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:675585882135:android:1f8e91640121e3e9",
+        "android_client_info": {
+          "package_name": "com.zugara.atproj.lampsplus.bestlight4u"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "675585882135-1jegqdum68lhhfet2mk0qg2g8qpgimup.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCw8ZkbXat9s7G3767P5jn2fHotbH6LucA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:675585882135:android:91cfe246fbbcbcdc",
+        "android_client_info": {
+          "package_name": "com.zugara.atproj.lampsplus.bestlight4u.pp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "675585882135-1jegqdum68lhhfet2mk0qg2g8qpgimup.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCw8ZkbXat9s7G3767P5jn2fHotbH6LucA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -129,6 +129,11 @@ public class ActionsFragment extends BaseFragment implements ActionsView {
         actionsPresenter.next();
     }
 
+    @OnClick(R.id.backToDesignButton)
+    public void onClickBackToDesignButton() {
+        actionsPresenter.backToDesign();
+    }
+
     @OnClick(R.id.invoiceButton)
     public void onClickInvoiceButton() {
         actionsPresenter.gotoInvoice();
@@ -146,7 +151,7 @@ public class ActionsFragment extends BaseFragment implements ActionsView {
 
     @OnClick(R.id.printButton)
     public void onClickPrintButton() {
-        actionsPresenter.print();
+        actionsPresenter.print(getActivity());
     }
 
     @OnClick(R.id.newSessionButton)
@@ -252,8 +257,9 @@ public class ActionsFragment extends BaseFragment implements ActionsView {
     public void updateShadowButton(float percent) {
         int buttonRes = -1;
         if (percent == 0) buttonRes = R.mipmap.light_100;
-        else if (percent < 0.75f) buttonRes = R.mipmap.light_50;
-        else buttonRes = R.mipmap.light_0;
+        else if (percent < 0.5f) buttonRes = R.mipmap.light_075;
+        else if (percent < 0.75f) buttonRes = R.mipmap.light_050;
+        else buttonRes = R.mipmap.light_015;
         shadowButton.setImageResource(buttonRes);
     }
 
