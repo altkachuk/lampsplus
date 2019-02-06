@@ -172,7 +172,7 @@ public class InvoicePresenter extends BaseFilePresenter {
         } else {
             drawTotalData();
             invoiceView.hidePreloader();
-            String invoicePath = downloadImage(invoiceBitmap, "invoice");
+            String invoicePath = downloadImage(invoiceBitmap, "estimate");
             sessionContext.setInvoicePath(invoicePath);
             invoiceView.setInvoiceBitmap(invoiceBitmap);
         }

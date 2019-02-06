@@ -192,6 +192,8 @@ public class ActionsPresenter extends BasePresenter {
     }
 
     public void newSession() {
+        sessionContext.setDesignPath(null);
+        sessionContext.setInvoicePath(null);
         finish();
         actionView.showCreateSessionFragment();
     }
