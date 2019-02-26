@@ -1,11 +1,8 @@
 package com.zugara.atproj.lampsplus.print;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.Build;
@@ -20,11 +17,14 @@ import android.print.pdf.PrintedPdfDocument;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 
+import com.zugara.atproj.lampsplus.utils.ImageUtils;
+import com.zugara.atproj.lampsplus.utils.ScalingUtils;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.BitSet;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -35,7 +35,7 @@ public class LPPrintAdatapter extends PrintDocumentAdapter {
 
 
     private Context context;
-    private PrintedPdfDocument mPdfDocument;
+    private PrintedPdfDocument pdfDocument;
     private List<Bitmap> images;
 
     public LPPrintAdatapter(Context context, List<String> urls) {
@@ -61,7 +61,7 @@ public class LPPrintAdatapter extends PrintDocumentAdapter {
     @Override
     public void onLayout(PrintAttributes oldAttributes, PrintAttributes newAttributes, CancellationSignal cancellationSignal, LayoutResultCallback callback, Bundle extras) {
         // Create a new PdfDocument with the requested page attributes
-        mPdfDocument = new PrintedPdfDocument(context, newAttributes);
+        pdfDocument = new PrintedPdfDocument(context, newAttributes);
 
         // Respond to cancellation request
         if (cancellationSignal.isCanceled() ) {
@@ -90,13 +90,13 @@ public class LPPrintAdatapter extends PrintDocumentAdapter {
     @Override
     public void onWrite(PageRange[] pages, ParcelFileDescriptor destination, CancellationSignal cancellationSignal, WriteResultCallback callback) {
         for (int i = 0; i < images.size(); i++) {
-            PdfDocument.Page page = mPdfDocument.startPage(i);
+            PdfDocument.Page page = pdfDocument.startPage(i);
 
             // check for cancellation
             if (cancellationSignal.isCanceled()) {
                 callback.onWriteCancelled();
-                mPdfDocument.close();
-                mPdfDocument = null;
+                pdfDocument.close();
+                pdfDocument = null;
                 return;
             }
 
@@ -104,27 +104,67 @@ public class LPPrintAdatapter extends PrintDocumentAdapter {
             drawPage(page, images.get(i));
 
             // Rendering is complete, so page can be finalized.
-            mPdfDocument.finishPage(page);
+            pdfDocument.finishPage(page);
         }
 
         // Write PDF document to file
         try {
-            mPdfDocument.writeTo(new FileOutputStream(
+            pdfDocument.writeTo(new FileOutputStream(
                     destination.getFileDescriptor()));
         } catch (IOException e) {
             callback.onWriteFailed(e.toString());
             return;
         } finally {
-            mPdfDocument.close();
-            mPdfDocument = null;
+            pdfDocument.close();
+            pdfDocument = null;
         }
-        PageRange[] writtenPages = new PageRange[2];
+
+        int[] arrPages = normalizeRanges(pages);
+        PageRange[] pageRanges = convertIntegerArrayToPageRanges(arrPages);
         // Signal the print framework the document is complete
-        //callback.onWriteFinished(writtenPages);
+        callback.onWriteFinished(pageRanges);
     }
+
+    /**
+     * Gets an array of page ranges and returns an array of integers with all ranges expanded.
+     */
+    private int[] normalizeRanges(PageRange[] ranges) {
+        // Expand ranges into a list of individual numbers.
+        ArrayList<Integer> pages = new ArrayList<Integer>();
+        for (PageRange range : ranges) {
+            for (int i = range.getStart(); i <= range.getEnd(); i++) {
+                pages.add(i);
+            }
+        }
+
+        // Convert the list into array.
+        int[] ret = new int[pages.size()];
+        Iterator<Integer> iterator = pages.iterator();
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = iterator.next().intValue();
+        }
+        return ret;
+    }
+
+    private PageRange[] convertIntegerArrayToPageRanges(int[] pagesArray) {
+        PageRange[] pageRanges;
+        if (pagesArray != null) {
+            pageRanges = new PageRange[pagesArray.length];
+            for (int i = 0; i < pageRanges.length; i++) {
+                int page = pagesArray[i];
+                pageRanges[i] = new PageRange(page, page);
+            }
+        } else {
+            // null corresponds to all pages in Chromium printing logic.
+            pageRanges = new PageRange[] { PageRange.ALL_PAGES };
+        }
+        return pageRanges;
+    }
+
 
     private void drawPage(PdfDocument.Page page, Bitmap bitmap) {
         Canvas canvas = page.getCanvas();
-        canvas.drawBitmap(bitmap, 0, 0, null);
+        Bitmap scaledBitmap = ImageUtils.compressBitmap(bitmap, page.getCanvas().getWidth() , page.getCanvas().getHeight(), ScalingUtils.ScalingLogic.FIT);
+        canvas.drawBitmap(scaledBitmap, 0, 0, null);
     }
 }

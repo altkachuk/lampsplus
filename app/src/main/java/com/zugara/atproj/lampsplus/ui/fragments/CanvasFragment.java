@@ -102,7 +102,7 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
             @Override
             public void onChildViewAdded(View parent, View child) {
                 final DraggableImage image = (DraggableImage) child;
-                image.setBound(0,0,lampsHolder.getWidth(), lampsHolder.getHeight()-100);
+                image.setBound(0,0,lampsHolder.getWidth()-100, lampsHolder.getHeight()-200);
                 image.setSelectorManager(selectorManager);
                 canvasPresenter.changeNumOfChildren(lampsHolder.getChildCount());
             }

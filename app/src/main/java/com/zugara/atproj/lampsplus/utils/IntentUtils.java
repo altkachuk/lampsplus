@@ -9,7 +9,9 @@ import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.print.PrintAttributes;
 import android.print.PrintManager;
+import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v4.print.PrintHelper;
 import android.util.Log;
@@ -83,9 +85,15 @@ public class IntentUtils {
         // Set job name, which will be displayed in the print queue
         String jobName = "Design";
 
+        PrintAttributes printAttributes = new PrintAttributes.Builder()
+                .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
+                .setResolution(new PrintAttributes.Resolution("id", Context.PRINT_SERVICE, 72, 72))
+                .setMinMargins(PrintAttributes.Margins.NO_MARGINS)
+                .build();
+
         // Start a print job, passing in a PrintDocumentAdapter implementation
         // to handle the generation of a print document
-        printManager.print(jobName, new LPPrintAdatapter(activity, sources), null);
+        printManager.print(jobName, new LPPrintAdatapter(activity, sources), printAttributes);
     }
 
 

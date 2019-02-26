@@ -34,7 +34,7 @@ public class ImageUtils {
         return null;
     }
 
-    private static Bitmap compressBitmap(Bitmap srcBitmap, int outWidth, int outHeight, ScalingUtils.ScalingLogic scalingLogic) {
+    public static Bitmap compressBitmap(Bitmap srcBitmap, int outWidth, int outHeight, ScalingUtils.ScalingLogic scalingLogic) {
         Bitmap outBitmap = ScalingUtils.createScaledBitmap(srcBitmap, outWidth, outHeight, scalingLogic);
         return outBitmap;
     }

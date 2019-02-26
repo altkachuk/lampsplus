@@ -27,6 +27,6 @@
     <string name="description">Description:</string>
     <string name="qty">Qty:</string>
     <string name="price">Price:</string>
-    <string name="invoice">Invoice</string>
+    <string name="invoice">Estimate</string>
     <string name="design">Design</string>
 </resources>
