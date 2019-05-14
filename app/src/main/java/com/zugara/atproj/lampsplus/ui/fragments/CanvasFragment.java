@@ -4,12 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -25,21 +20,21 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.zugara.atproj.lampsplus.R;
-import com.zugara.atproj.lampsplus.drag.DragManager;
+import com.zugara.atproj.lampsplus.draganddrop.DragManager;
+import com.zugara.atproj.lampsplus.draganddrop.DropManager;
 import com.zugara.atproj.lampsplus.model.Lamp;
 import com.zugara.atproj.lampsplus.presenters.CanvasPresenter;
-import com.zugara.atproj.lampsplus.selection.ISelectable;
+import com.zugara.atproj.lampsplus.selection.Selectable;
 import com.zugara.atproj.lampsplus.selection.SelectorManager;
 import com.zugara.atproj.lampsplus.ui.fragments.base.BaseFragment;
-import com.zugara.atproj.lampsplus.ui.view.DraggableImage;
 import com.zugara.atproj.lampsplus.ui.view.GlowImage;
+import com.zugara.atproj.lampsplus.ui.view.LampImageView;
 import com.zugara.atproj.lampsplus.utils.ImageUtils;
 import com.zugara.atproj.lampsplus.utils.IntentUtils;
 import com.zugara.atproj.lampsplus.utils.Requests;
 import com.zugara.atproj.lampsplus.views.CanvasView;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -93,15 +88,30 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
         super.onViewCreated(view, savedInstanceState);
         initPreloader();
 
-        dragEventListener = new DragManager.DragEventListener();
-        lampsHolder.setOnDragListener(dragEventListener);
+        //dragEventListener = new DragManager.DragEventListener();
+        //lampsHolder.setOnDragListener(dragEventListener);
+
+        lampsHolder.setOnDragListener(new DropManager(new DropManager.OnDropListener() {
+            @Override
+            public void onDrop(Object localState, float dropX, float dropY) {
+                ImageView imageView = (ImageView) localState;
+                Bitmap bitmap = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
+                Lamp lamp = (Lamp) imageView.getTag();
+
+                LampImageView lampView = new LampImageView(getContext(), bitmap);
+
+
+                lampsHolder.addView(lampView);
+                lampView.move(dropX, dropY);
+            }
+        }));
 
         selectorManager = new SelectorManager();
 
         lampsHolder.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
             @Override
             public void onChildViewAdded(View parent, View child) {
-                final DraggableImage image = (DraggableImage) child;
+                final LampImageView image = (LampImageView) child;
                 image.setBound(0,0,lampsHolder.getWidth()-100, lampsHolder.getHeight()-200);
                 image.setSelectorManager(selectorManager);
                 canvasPresenter.changeNumOfChildren(lampsHolder.getChildCount());
@@ -109,7 +119,7 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
 
             @Override
             public void onChildViewRemoved(View parent, View child) {
-                DraggableImage image = (DraggableImage) child;
+                LampImageView image = (LampImageView) child;
                 selectorManager.removeItem(image);
                 canvasPresenter.changeNumOfChildren(lampsHolder.getChildCount());
             }
@@ -150,7 +160,7 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
         dragEventListener.setEnabled(true);
 
         for (int i = 0; i < lampsHolder.getChildCount(); i++) {
-            DraggableImage image = (DraggableImage) lampsHolder.getChildAt(i);
+            LampImageView image = (LampImageView) lampsHolder.getChildAt(i);
             image.enableTouch();
         }
     }
@@ -160,7 +170,7 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
         selectorManager.setEnabled(false);
         dragEventListener.setEnabled(false);
         for (int i = 0; i < lampsHolder.getChildCount(); i++) {
-            DraggableImage image = (DraggableImage) lampsHolder.getChildAt(i);
+            LampImageView image = (LampImageView) lampsHolder.getChildAt(i);
             image.disableTouch();
         }
     }
@@ -184,7 +194,7 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
 
     public void getLampData(List<Lamp> lamps, List<Matrix> matrices, List<Boolean> mirroredList, List<Integer> sourceWidthList) {
         for (int i = 0; i < lampsHolder.getChildCount(); i++) {
-            DraggableImage image = (DraggableImage) lampsHolder.getChildAt(i);
+            LampImageView image = (LampImageView) lampsHolder.getChildAt(i);
 
             lamps.add((Lamp) image.getTag());
             matrices.add(image.getImageMatrix());
@@ -240,12 +250,12 @@ public class CanvasFragment extends BaseFragment implements CanvasView {
 
 
     @Override
-    public void deleteLamp(ISelectable item) {
+    public void deleteLamp(Selectable item) {
         lampsHolder.removeView((View)item);
     }
 
     @Override
-    public void addLamp(ISelectable item) {
+    public void addLamp(Selectable item) {
         lampsHolder.addView((View) item);
     }
 

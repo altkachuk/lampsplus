@@ -9,7 +9,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 
-import com.zugara.atproj.lampsplus.drag.IDraggable;
+import com.zugara.atproj.lampsplus.draganddrop.Draggable;
 import com.zugara.atproj.lampsplus.events.BackToDesignEvent;
 import com.zugara.atproj.lampsplus.events.ChangeLampsEvent;
 import com.zugara.atproj.lampsplus.events.ChangeShadowEvent;
@@ -26,7 +26,8 @@ import com.zugara.atproj.lampsplus.events.MirrorLampEvent;
 import com.zugara.atproj.lampsplus.events.UploadBackgroundEvent;
 import com.zugara.atproj.lampsplus.model.Lamp;
 import com.zugara.atproj.lampsplus.model.singleton.SessionContext;
-import com.zugara.atproj.lampsplus.selection.ISelectable;
+import com.zugara.atproj.lampsplus.selection.Mirrorable;
+import com.zugara.atproj.lampsplus.selection.Selectable;
 import com.zugara.atproj.lampsplus.views.CanvasView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -150,18 +151,18 @@ public class CanvasPresenter extends BaseFilePresenter {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMirrorLampEvent(MirrorLampEvent event) {
-        ((ISelectable)canvasView.getSelectorManager().getFrontItem()).mirror();
+        ((Mirrorable)canvasView.getSelectorManager().getFrontItem()).mirror();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onCopyLampEvent(CopyLampEvent event) {
-        ISelectable item = (ISelectable) ((IDraggable)canvasView.getSelectorManager().getFrontItem()).clone();
+        Selectable item = (Selectable) ((Draggable)canvasView.getSelectorManager().getFrontItem()).clone();
         canvasView.addLamp(item);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDeleteLampEvent(DeleteLampEvent event) {
-        ISelectable item = canvasView.getSelectorManager().getFrontItem();
+        Selectable item = canvasView.getSelectorManager().getFrontItem();
         if (item != null)
             canvasView.deleteLamp(item);
     }

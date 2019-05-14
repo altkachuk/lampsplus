@@ -18,14 +18,14 @@ public class SelectorManager {
     private int mode = CLICK_MODE;
     private long downEventTime = 0;
 
-    private List<ISelectable> itemList = new ArrayList<>();
+    private List<Selectable> itemList = new ArrayList<>();
     private boolean enabled = true;
 
     public SelectorManager() {
 
     }
 
-    public void addItem(ISelectable item) {
+    public void addItem(Selectable item) {
         if (itemList.size() > 0) {
             itemList.get(itemList.size()-1).deselect();
         }
@@ -33,7 +33,7 @@ public class SelectorManager {
         item.select();;
     }
 
-    public ISelectable removeItem(ISelectable item) {
+    public Selectable removeItem(Selectable item) {
         if (item != null) {
             item.deselect();
             itemList.remove(item);
@@ -44,7 +44,7 @@ public class SelectorManager {
         return item;
     }
 
-    public ISelectable getFrontItem() {
+    public Selectable getFrontItem() {
         if (itemList.size() > 0)
             return itemList.get(itemList.size()-1);
         return null;
@@ -65,7 +65,7 @@ public class SelectorManager {
 
     private void deselectAll() {
         for (int i = 0; i < itemList.size(); i++) {
-            ISelectable item = itemList.get(i);
+            Selectable item = itemList.get(i);
             item.deselect();
         }
     }
@@ -97,7 +97,7 @@ public class SelectorManager {
 
     private void select(float x, float y) {
         for (int i = 0; i < itemList.size(); i++) {
-            ISelectable item = itemList.get(i);
+            Selectable item = itemList.get(i);
             if (item.checkPoint(x, y)) {
                 itemList.remove(item);
                 if (itemList.size() > 0) {

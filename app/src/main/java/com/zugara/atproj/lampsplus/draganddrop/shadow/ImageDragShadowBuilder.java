@@ -1,4 +1,4 @@
-package com.zugara.atproj.lampsplus.drag.shadow;
+package com.zugara.atproj.lampsplus.draganddrop.shadow;
 
 import android.graphics.Canvas;
 import android.graphics.Color;

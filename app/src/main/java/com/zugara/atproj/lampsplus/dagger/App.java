@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
 
 public class App extends Application {
 
-    private final String TAG = "App";
+    private static final String TAG = "App";
 
     ApplicationComponent applicationComponent;
     OkHttpClientComponent okHttpClientComponent;

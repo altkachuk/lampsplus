@@ -1,33 +1,12 @@
 package com.zugara.atproj.lampsplus.ui.view;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BlurMaskFilter;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.support.v7.widget.AppCompatImageView;
-import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.zugara.atproj.lampsplus.drag.DragManager;
-import com.zugara.atproj.lampsplus.drag.IDraggable;
-import com.zugara.atproj.lampsplus.selection.ISelectable;
-import com.zugara.atproj.lampsplus.selection.SelectorManager;
-
 /**
  * Created by andre on 07-Dec-18.
  */
 
-public class DraggableImage extends AppCompatImageView implements View.OnTouchListener, IDraggable, ISelectable {
+public class DraggableImage /*extends AppCompatImageView implements View.OnTouchListener, Draggable, Selectable*/ {
 
-    private final String TAG = "DraggableImage";
+    /*private final String TAG = "DraggableImage";
 
     private DragManager dragManager;
     private SelectorManager selectorManager;
@@ -83,26 +62,15 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
         dragManager.setBound(boundary);
     }
 
+
     @Override
-    public void setMatrix(Matrix matrix) {
-        setImageMatrix(matrix);
+    public void setImageMatrix(Matrix matrix) {
+        super.setImageMatrix(matrix);
 
         if (selected) {
             Bitmap highlightedBitmap = highlightImage(oldBitmap, getCurrentScale());
             setImageBitmap(highlightedBitmap);
         }
-    }
-
-    @Override
-    public float getSrcWidth() {
-        Bitmap bitmap = ((BitmapDrawable) getDrawable()).getBitmap();
-        return bitmap.getWidth();
-    }
-
-    @Override
-    public float getSrcHeight() {
-        Bitmap bitmap = ((BitmapDrawable) getDrawable()).getBitmap();
-        return bitmap.getHeight();
     }
 
     @Override
@@ -112,7 +80,7 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
         float localX = x - bitmap.getWidth() / 2.0f;
         float localY = y - bitmap.getHeight() / 2.0f;
         matrix.postTranslate(localX, localY);
-        setMatrix(matrix);
+        setImageMatrix(matrix);
         dragManager.setMatrix(matrix);
     }
 
@@ -233,6 +201,7 @@ public class DraggableImage extends AppCompatImageView implements View.OnTouchLi
         }
         image.setImageBitmap(oldBitmap);
         image.setTag(this.getTag());
+        image.isMirrored = isMirrored;
         return image;
-    }
+    }*/
 }

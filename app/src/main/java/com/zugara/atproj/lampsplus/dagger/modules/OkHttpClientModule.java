@@ -48,7 +48,8 @@ public class OkHttpClientModule {
     }
 
     @Provides
-    OkHttpClient provideOkHttpClient(Context context, CookieJar cookie, Cache cache, Interceptor interceptor) {
+    OkHttpClient provideOkHttpClient(Context context, CookieJar cookie, Cache cache,
+                                     Interceptor interceptor) {
         OkHttpClient.Builder client = new OkHttpClient.Builder().cookieJar(cookie);
         client.cache(cache);
         client.addInterceptor(interceptor);

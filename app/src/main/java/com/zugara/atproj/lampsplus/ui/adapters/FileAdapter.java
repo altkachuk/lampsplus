@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.zugara.atproj.lampsplus.R;
 import com.zugara.atproj.lampsplus.model.BaseFile;
 import com.zugara.atproj.lampsplus.ui.viewholders.FileViewHolder;
+import com.zugara.atproj.lampsplus.ui.viewholders.ItemViewHolder;
 
 import java.util.List;
 

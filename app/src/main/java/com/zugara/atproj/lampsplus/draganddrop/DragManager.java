@@ -1,15 +1,17 @@
-package com.zugara.atproj.lampsplus.drag;
+package com.zugara.atproj.lampsplus.draganddrop;
 
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 /**
  * Created by andre on 07-Dec-18.
@@ -56,7 +58,12 @@ public class DragManager {
         savedMatrix.set(matrix);
     }
 
-    public void onTouch(IDraggable view, MotionEvent event) {
+    public void TestMethod() {
+        ;
+    }
+
+    public void onTouch(ImageView view, MotionEvent event) {
+        TestMethod();
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 mode = DragMode.DRAG;
@@ -83,8 +90,8 @@ public class DragManager {
                     float dx = event.getX() - startPos.x;
                     float dy = event.getY() - startPos.y;
 
-                    if (x+dx > bounddary.left && x+dx < bounddary.right
-                            &&  y+dy > bounddary.top && y+dy < bounddary.bottom) {
+                    if (x + dx > bounddary.left && x + dx < bounddary.right
+                            &&  y + dy > bounddary.top && y + dy < bounddary.bottom) {
                         // translate
                         matrix.postTranslate(dx, dy);
                         savedDragMatrix.set(matrix);
@@ -94,7 +101,9 @@ public class DragManager {
                         startPos.set(event.getX(), event.getY());
                     }
                 } else if (mode == DragMode.ZOOM) {
-                    float[] src = new float[]{view.getSrcWidth()/2, view.getSrcHeight()/2};
+                    int srcWidth = ((BitmapDrawable) view.getDrawable()).getBitmap().getWidth();
+                    int srcHeight = ((BitmapDrawable) view.getDrawable()).getBitmap().getHeight();
+                    float[] src = new float[]{srcWidth / 2, srcHeight / 2};
                     float[] dst = new float[2];
                     matrix.mapPoints(dst, src);
                     float px = dst[0];
@@ -115,7 +124,7 @@ public class DragManager {
                 break;
         }
 
-        view.setMatrix(matrix);
+        view.setImageMatrix(matrix);
     }
 
     /**
@@ -124,8 +133,8 @@ public class DragManager {
     private float spacing(MotionEvent event) {
         float x = event.getX(0) - event.getX(1);
         float y = event.getY(0) - event.getY(1);
-        float s=x * x + y * y;
-        return (float)Math.sqrt(s);
+        float s = x * x + y * y;
+        return (float) Math.sqrt(s);
     }
 
     /**
@@ -150,6 +159,9 @@ public class DragManager {
         return (float) Math.toDegrees(radians);
     }
 
+    /**
+     *
+     */
     public static class DragEventListener implements View.OnDragListener {
 
         private boolean enabled = true;
@@ -190,7 +202,7 @@ public class DragManager {
                     // Gets the item containing the dragged data
                     ClipData.Item item = event.getClipData().getItemAt(0);
 
-                    IDraggable view = ((IDraggable) event.getLocalState()).clone();
+                    Draggable view = ((Draggable) event.getLocalState()).clone();
                     ViewGroup container = (ViewGroup) v;
                     container.addView((View)view);
                     view.move(event.getX(), event.getY());

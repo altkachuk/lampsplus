@@ -1,12 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdkVersion 28
     defaultConfig {
         applicationId "com.zugara.atproj.lampsplus"
         minSdkVersion 23
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -62,7 +61,7 @@ dependencies {
     // dagger
     implementation "com.google.dagger:dagger:$daggerVersion"
     annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
-    provided 'javax.annotation:jsr250-api:1.0'
+    compileOnly 'javax.annotation:jsr250-api:1.0'
 
     // butterknife
     implementation "com.jakewharton:butterknife:$butterknifeVersion"
@@ -94,10 +93,10 @@ dependencies {
     androidTestImplementation "com.android.support.test.espresso:espresso-intents:${espressoVersion}"
     androidTestImplementation "com.android.support.test.espresso:espresso-contrib:${espressoVersion}"
 
-    androidTestCompile "com.android.support:support-v4:${supportVersion}"
-    androidTestCompile "com.android.support:appcompat-v7:$supportVersion"
-    androidTestCompile "com.android.support:recyclerview-v7:${supportVersion}"
-    androidTestCompile "com.android.support:design:$supportVersion"
+    androidTestImplementation "com.android.support:support-v4:${supportVersion}"
+    androidTestImplementation "com.android.support:appcompat-v7:$supportVersion"
+    androidTestImplementation "com.android.support:recyclerview-v7:${supportVersion}"
+    androidTestImplementation "com.android.support:design:$supportVersion"
 
     // Event Bus
     implementation 'org.greenrobot:eventbus:3.1.1'
@@ -107,3 +106,20 @@ dependencies {
 }
 
 apply plugin: 'com.google.gms.google-services'
+
+apply plugin: 'checkstyle'
+
+checkstyle {
+    ignoreFailures = false
+    toolVersion '7.5'
+    configFile = new File("../config/checkstyle/checkstyle.xml")
+}
+
+//task checkstyle(type: Checkstyle) {
+//    source 'src'
+//    include '**/*.java'
+//    exclude '**/gen/**'
+//    exclude '**/R.java'
+//    exclude '**/BuildConfig.java'
+//    classpath = files()
+//}

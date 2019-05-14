@@ -1,4 +1,4 @@
-package com.zugara.atproj.lampsplus.drag;
+package com.zugara.atproj.lampsplus.draganddrop;
 
 import android.content.Context;
 import android.view.GestureDetector;

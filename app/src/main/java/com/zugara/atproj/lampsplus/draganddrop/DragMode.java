@@ -1,4 +1,4 @@
-package com.zugara.atproj.lampsplus.drag;
+package com.zugara.atproj.lampsplus.draganddrop;
 
 /**
  * Created by andre on 07-Dec-18.

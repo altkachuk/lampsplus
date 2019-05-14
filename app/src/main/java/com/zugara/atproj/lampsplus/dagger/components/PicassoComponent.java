@@ -9,7 +9,8 @@ import dagger.Component;
  * Created by andre on 07-Dec-18.
  */
 
-@Component(modules = {PicassoModule.class}, dependencies = {ApplicationComponent.class, OkHttpClientComponent.class})
+@Component(modules = {PicassoModule.class}, dependencies = {ApplicationComponent.class,
+        OkHttpClientComponent.class})
 public interface PicassoComponent {
     Picasso picasso();
 }
