@@ -1,7 +1,6 @@
 package com.zugara.atproj.lampsplus.selection;
 
 import android.view.MotionEvent;
-import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +21,7 @@ public class SelectorManager {
     private boolean enabled = true;
 
     public SelectorManager() {
-
+        ;
     }
 
     public void addItem(Selectable item) {
@@ -44,33 +43,26 @@ public class SelectorManager {
         return item;
     }
 
-    public Selectable getFrontItem() {
+    public Selectable getTopItem() {
         if (itemList.size() > 0)
             return itemList.get(itemList.size()-1);
         return null;
     }
 
-
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-        if (enabled) {
-            if (itemList.size() > 0) {
-                itemList.get(itemList.size() - 1).select();
-            }
-        } else {
-            deselectAll();
+    public void selectTop() {
+        if (itemList.size() > 0) {
+            itemList.get(itemList.size() - 1).select();
         }
     }
 
-    private void deselectAll() {
+    public void deselectAll() {
         for (int i = 0; i < itemList.size(); i++) {
             Selectable item = itemList.get(i);
             item.deselect();
         }
     }
 
-    public void onTouch(View view, MotionEvent event) {
+    public void onTouch(MotionEvent event) {
         if (!enabled) return;
 
         switch (event.getAction() & MotionEvent.ACTION_MASK) {

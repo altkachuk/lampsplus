@@ -18,10 +18,11 @@ import com.zugara.atproj.lampsplus.selection.SelectorManager;
 
 public class SelectImageView extends AppCompatImageView implements Selectable, View.OnTouchListener {
 
-    private SelectorManager selectorManager;
-    private Bitmap bitmap;
+    //private SelectorManager selectorManager;
+    protected Bitmap bitmap;
     private boolean selected = false;
     private float scale = 1.0f;
+    private OnSelectTouchListener listener;
 
     public SelectImageView(Context context, Bitmap bitmap) {
         super(context);
@@ -34,25 +35,13 @@ public class SelectImageView extends AppCompatImageView implements Selectable, V
         return selected;
     }
 
-    public Bitmap getBitmap() {
-        return bitmap;
-    }
-
-    public void setBitmap(Bitmap bitmap) {
-        this.bitmap = bitmap;
-    }
-
-    public float getScale() {
-        return scale;
-    }
-
-    public void setScale(float scale) {
-        this.scale = scale;
-    }
-
-    public void setSelectorManager(SelectorManager selectorManager) {
+    /*public void setSelectorManager(SelectorManager selectorManager) {
         this.selectorManager = selectorManager;
         selectorManager.addItem(this);
+    }*/
+
+    public void setOnSelectTouchListener(OnSelectTouchListener listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -94,7 +83,8 @@ public class SelectImageView extends AppCompatImageView implements Selectable, V
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        selectorManager.onTouch(this, event);
+        //selectorManager.onTouch(event);
+        listener.onTouch(event);
         return true;
     }
 
@@ -129,5 +119,9 @@ public class SelectImageView extends AppCompatImageView implements Selectable, V
 
         // return out final image
         return bmOut;
+    }
+
+    public interface OnSelectTouchListener {
+        boolean onTouch(MotionEvent event);
     }
 }

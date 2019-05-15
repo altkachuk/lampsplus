@@ -11,21 +11,26 @@ import android.view.ViewGroup;
 
 import com.zugara.atproj.lampsplus.draganddrop.DragManager;
 import com.zugara.atproj.lampsplus.draganddrop.Draggable;
+import com.zugara.atproj.lampsplus.model.Lamp;
 
 import java.lang.reflect.Field;
 
 public class LampImageView extends MirrorImageView implements View.OnTouchListener, Draggable {
 
     private DragManager dragManager;
-    private boolean touchEnabled = true;
+    private Lamp lamp;
 
-    public LampImageView(Context context, Bitmap bitmap) {
+    public LampImageView(Context context, Bitmap bitmap, Lamp lamp) {
         super(context, bitmap);
-
+        this.lamp = lamp;
         setScaleType(ScaleType.MATRIX);
         setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         dragManager = new DragManager();
         setOnTouchListener(this);
+    }
+
+    public Lamp getLamp() {
+        return lamp;
     }
 
     @Override
@@ -51,32 +56,17 @@ public class LampImageView extends MirrorImageView implements View.OnTouchListen
     }
 
     @Override
-    public void enableTouch() {
-        touchEnabled = true;
-    }
-
-    @Override
-    public void disableTouch() {
-        touchEnabled = false;
-    }
-
-    @Override
     public boolean onTouch(View v, MotionEvent event) {
-        if (!touchEnabled) {
-            return false;
-        }
-
         dragManager.onTouch(this, event);
 
         return super.onTouch(v, event);
     }
 
     @Override
-    public Draggable clone() {
+    public LampImageView clone() {
         Bitmap bitmap = ((BitmapDrawable) getDrawable()).getBitmap();
-        LampImageView lampView = new LampImageView(getContext(), bitmap);
-        lampView.setImageBitmap(getBitmap());
-        lampView.setTag(this.getTag());
+        LampImageView lampView = new LampImageView(getContext(), bitmap, this.lamp);
+        lampView.setImageBitmap(bitmap);
         if (isMirrored()) {
             try {
                 Field isMirroredField = lampView.getClass().getDeclaredField("isMirrored");

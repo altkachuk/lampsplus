@@ -18,9 +18,9 @@ public class MirrorImageView extends SelectImageView implements Mirrorable {
     public void mirror() {
         Matrix matrix = new Matrix();
         matrix.preScale(-1.0f, 1.0f);
-        Bitmap outBitmap = Bitmap.createBitmap(getBitmap(), 0, 0, getBitmap().getWidth(), getBitmap().getHeight(), matrix, true);
+        Bitmap outBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
         setImageBitmap(outBitmap);
-        setBitmap(outBitmap);
+        bitmap = outBitmap;
 
         if (isSelect()) {
             Bitmap highlightedBitmap = highlightImage();

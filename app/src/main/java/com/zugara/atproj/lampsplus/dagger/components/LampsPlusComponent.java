@@ -5,6 +5,7 @@ import com.zugara.atproj.lampsplus.presenters.ActionsPresenter;
 import com.zugara.atproj.lampsplus.presenters.CanvasPresenter;
 import com.zugara.atproj.lampsplus.presenters.CreateSessionPresenter;
 import com.zugara.atproj.lampsplus.presenters.InvoicePresenter;
+import com.zugara.atproj.lampsplus.presenters.LampsCanvasPresenter;
 import com.zugara.atproj.lampsplus.presenters.LampsPresenter;
 import com.zugara.atproj.lampsplus.ui.activities.MainActivity;
 import com.zugara.atproj.lampsplus.ui.activities.SplashActivity;
@@ -12,6 +13,7 @@ import com.zugara.atproj.lampsplus.ui.fragments.ActionsFragment;
 import com.zugara.atproj.lampsplus.ui.fragments.CanvasFragment;
 import com.zugara.atproj.lampsplus.ui.fragments.CreateSessionFragment;
 import com.zugara.atproj.lampsplus.ui.fragments.InvoiceFragment;
+import com.zugara.atproj.lampsplus.ui.fragments.LampsCanvasFragment;
 import com.zugara.atproj.lampsplus.ui.fragments.LampsFragment;
 import com.zugara.atproj.lampsplus.ui.viewholders.FileViewHolder;
 
@@ -40,6 +42,8 @@ public interface LampsPlusComponent {
     // fragments
     void inject(CreateSessionFragment createSessionFragment);
 
+    void inject(LampsCanvasFragment lampsCanvasFragment);
+
     void inject(CanvasFragment canvasFragment);
 
     void inject(ActionsFragment actionsFragment);
@@ -52,6 +56,8 @@ public interface LampsPlusComponent {
     void inject(CreateSessionPresenter createSessionPresenter);
 
     void inject(LampsPresenter lampsPresenter);
+
+    void inject(LampsCanvasPresenter lampsCanvasPresenter);
 
     void inject(CanvasPresenter canvasPresenter);
 
