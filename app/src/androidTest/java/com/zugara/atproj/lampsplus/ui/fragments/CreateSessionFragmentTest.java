@@ -4,7 +4,7 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.zugara.atproj.lampsplus.R;
-import com.zugara.atproj.lampsplus.ui.activities.MainActivity;
+import com.atproj.zugara.lampsplus.ui.activities.MainActivity;
 
 import org.junit.Rule;
 import org.junit.Test;

@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.zugara.atproj.lampsplus"
+        applicationId "com.atproj.zugara.lampsplus"
         minSdkVersion 23
         targetSdkVersion 28
         versionCode 1
@@ -41,7 +41,7 @@ android {
     }
     productFlavors {
         bestlight4u {
-            applicationId = "com.zugara.atproj.lampsplus.bestlight4u"
+            applicationId = "com.atproj.zugara.lampsplus.bestlight4u"
             resValue "string", "app_name", "BESTLIGHT4U"
 
             buildConfigField 'String', 'HOST', '\"{\\"pp\\" : \\"http://somehost.com/\\",\\"release\\": \\"http://somehost.com/\\",\\"debug\\":\\"http://somehost.com/\\"}\"'

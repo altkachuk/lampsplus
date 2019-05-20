@@ -1,0 +1,53 @@
+package com.atproj.zugara.lampsplus.ui.activities;
+
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+
+import com.atproj.zugara.lampsplus.R;
+import com.atproj.zugara.lampsplus.ui.activities.base.BaseActivity;
+import com.atproj.zugara.lampsplus.ui.fragments.CanvasFragment;
+import com.atproj.zugara.lampsplus.utils.IntentUtils;
+import com.atproj.zugara.lampsplus.utils.Requests;
+
+public class MainActivity extends BaseActivity {
+
+    private CanvasFragment canvasFragment;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        canvasFragment = (CanvasFragment) getFragmentManager().findFragmentById(R.id.canvasFragment);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        if (requestCode == Requests.EXTERNAL_STORAGE_REQUEST) {
+            for (int i = 0; i < permissions.length; i++) {
+                String permission = permissions[i];
+                int res = grantResults[i];
+                if (permission.equals(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) && res == PackageManager.PERMISSION_GRANTED) {
+                    if (checkStoragePermissions())
+                        IntentUtils.openStorageIntent(this, "image/*", Requests.EXTERNAL_STORAGE_REQUEST);
+                }
+            }
+        }
+    }
+
+    private boolean checkStoragePermissions() {
+        return ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != RESULT_OK)
+            return;
+
+        if (requestCode == Requests.EXTERNAL_STORAGE_REQUEST) {
+            canvasFragment.updateBackground(data);
+        }
+    }
+}

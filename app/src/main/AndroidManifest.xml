@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.zugara.atproj.lampsplus">
+    package="com.atproj.zugara.lampsplus">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
-        android:name=".dagger.App"
+        android:name="com.atproj.zugara.lampsplus.dagger.App"
         android:allowBackup="true"
         android:icon="@drawable/ic_app"
         android:label="@string/app_name"
@@ -27,7 +27,7 @@
                 android:resource="@xml/provider_paths"/>
         </provider>
 
-        <activity android:name=".ui.activities.SplashActivity"
+        <activity android:name="com.atproj.zugara.lampsplus.ui.activities.SplashActivity"
             android:screenOrientation="landscape"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -37,7 +37,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activities.MainActivity"
+        <activity android:name="com.atproj.zugara.lampsplus.ui.activities.MainActivity"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar"/>
     </application>
