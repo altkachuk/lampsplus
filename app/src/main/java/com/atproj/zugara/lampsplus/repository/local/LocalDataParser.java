@@ -1,4 +1,4 @@
-package com.atproj.zugara.lampsplus.fileloader;
+package com.atproj.zugara.lampsplus.repository.local;
 
 import android.util.Log;
 
@@ -6,9 +6,9 @@ import com.atproj.zugara.lampsplus.excel.ExcelFormat;
 import com.atproj.zugara.lampsplus.excel.ExcelParser;
 import com.atproj.zugara.lampsplus.model.Folder;
 import com.atproj.zugara.lampsplus.model.Glow;
+import com.atproj.zugara.lampsplus.model.Item;
 import com.atproj.zugara.lampsplus.model.Lamp;
 import com.atproj.zugara.lampsplus.model.Source;
-import com.atproj.zugara.lampsplus.utils.FileUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,50 +19,39 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created by andre on 17-Dec-18.
- */
+public class LocalDataParser {
 
-public class LocalFileLoader implements IFileLoader {
-
-    private final String TAG = "LocalFileLoader";
-    private final String[] file_exception = new String[]{
-            ".xls",
-            "effects",
-            "ies_light"};
+    private final String TAG = "LocalParser";
 
     private HashMap<String, File> effectList;
     private JSONArray lampList;
+    private List<Item> allItems;
+    private String[] fileExceptions;
 
-    private HashMap<FileLoaderListener, FileLoaderListener> listenerHashMap = new HashMap<>();
-
-    public LocalFileLoader() {
-
+    public LocalDataParser() {
+        ;
     }
 
-    @Override
-    public void load() {
-        File rootDir = FileUtils.getAppDirectory();
+    public void setFileExceptions(String... exceptions) {
+        fileExceptions = exceptions;
+    }
 
+    public List<Item> getAllItems() {
+        return allItems;
+    }
+
+    public void parse(File rootDir) {
         if (!rootDir.exists()) {
             boolean result = rootDir.mkdirs();
             Log.d(TAG, "root created: " + result);
-            for (FileLoaderListener listener : listenerHashMap.keySet()) {
-                listener.onProductListError();
-            }
-            return;
         }
 
         parseConfigFile(rootDir);
+
         parseEffects(rootDir);
 
-        Folder root = new Folder();
-        root.setName(rootDir.getName());
-        parseFiles(root, rootDir);
-
-        for (FileLoaderListener listener : listenerHashMap.keySet()) {
-            listener.onComplete(root);
-        }
+        allItems = new ArrayList<>();
+        parseFiles(null, rootDir);
     }
 
     private void parseConfigFile(File parentDir) {
@@ -90,9 +79,6 @@ public class LocalFileLoader implements IFileLoader {
             @Override
             public void onError(Exception e) {
                 Log.d(TAG, e.getMessage());
-                for (FileLoaderListener listener : listenerHashMap.keySet()) {
-                    listener.onProductListError();
-                }
             }
         });
         excelParser.parse(excelFile);
@@ -108,46 +94,40 @@ public class LocalFileLoader implements IFileLoader {
         }
     }
 
-    private void parseFiles(Folder parent, File parentDir) {
+    private void parseFiles(Item parent, File parentDir) {
         File[] files = parentDir.listFiles();
+        if (files == null) {
+            return;
+        }
 
-        if (files != null) {
-            for (File file : files) {
-                boolean accept = true;
-                for (String str : file_exception) {
-                    if (file.getName().indexOf(str) != -1) {
-                        accept = false;
-                    }
+        for (File file : files) {
+            if (isFileAccepted(file)) {
+                String name = file.getName();
+                Item item;
+                if (name.indexOf(".png") != -1) {
+                    item = createLamp(file);
+                } else {
+                    item = createFolder(file);
+                    parseFiles(item, file);
                 }
-                if (accept) {
-                    String name = file.getName();
-                    if (name.indexOf(".png") != -1) {
-                        Lamp lamp = createLamp(file);
-                        parent.addChild(lamp);
-                    } else {
-                        Folder folder = new Folder();
-                        folder.setName(file.getName());
-                        parent.addChild(folder);
-
-                        parseFiles(folder, file);
-                    }
+                if (parent != null) {
+                    item.setParent(parent);
                 }
+                allItems.add(item);
             }
         }
     }
 
-    @Override
-    public void addListener(FileLoaderListener listener) {
-        if (listenerHashMap.get(listener) == null) {
-            listenerHashMap.put(listener, listener);
+    private boolean isFileAccepted(File file) {
+        if (fileExceptions != null) {
+            for (String str : fileExceptions) {
+                if (file.getName().indexOf(str) != -1) {
+                    return false;
+                }
+            }
         }
-    }
 
-    @Override
-    public void removeListener(FileLoaderListener listener) {
-        if (listenerHashMap.get(listener) != null) {
-            listenerHashMap.remove(listener);
-        }
+        return true;
     }
 
     private File getExcelFile(File parentDir) {
@@ -232,4 +212,10 @@ public class LocalFileLoader implements IFileLoader {
         return lamp;
     }
 
+    private Folder createFolder(File file) {
+        Folder folder = new Folder();
+        folder.setId(file.getParent() + file.getName());
+        folder.setName(file.getName());
+        return folder;
+    }
 }

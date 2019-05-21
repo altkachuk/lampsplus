@@ -10,7 +10,6 @@ import java.util.List;
 
 public interface LampsView {
     void setDataProvider(List<Item> fileList);
-    void setBreadcrumps(List<String> breadcrumps);
-    void enableBackButton(boolean enable);
+    void setBreadcrumps(List<String> breadcrumpsList);
     void showProductListError();
 }

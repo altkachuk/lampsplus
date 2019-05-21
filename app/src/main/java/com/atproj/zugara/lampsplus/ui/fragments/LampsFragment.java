@@ -78,20 +78,16 @@ public class LampsFragment extends BaseFragment implements LampsView {
     }
 
     @Override
-    public void setBreadcrumps(List<String> breadcrumps) {
-        String breadcrumpsStr = "";
-        for (String item : breadcrumps) {
-            if (breadcrumpsStr.length() > 0) {
-                breadcrumpsStr += " -> ";
+    public void setBreadcrumps(List<String> breadcrumpsList) {
+        String breadcrumps = null;
+        if (breadcrumpsList.size() > 0) {
+            breadcrumps = breadcrumpsList.get(0);
+            for (int i = 1; i < breadcrumpsList.size(); i++) {
+                breadcrumps += " -> " + breadcrumpsList.get(i);
             }
-            breadcrumpsStr += item;
         }
-        breadcrumpsText.setText(breadcrumpsStr);
-    }
-
-    @Override
-    public void enableBackButton(boolean enable) {
-        backButton.setEnabled(enable);
+        breadcrumpsText.setText(breadcrumps);
+        backButton.setEnabled(breadcrumpsList.size() > 1);
     }
 
     @Override
@@ -114,7 +110,7 @@ public class LampsFragment extends BaseFragment implements LampsView {
         fileRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity().getApplicationContext(), new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                lampsPresenter.selectFile(position);
+                lampsPresenter.selectItem(position);
             }
         }));
     }

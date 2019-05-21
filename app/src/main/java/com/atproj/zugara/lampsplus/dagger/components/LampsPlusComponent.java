@@ -29,7 +29,8 @@ import dagger.Component;
 @Component(dependencies = {
         ApplicationComponent.class,
         PicassoComponent.class,
-        RuntimeComponent.class
+        RuntimeComponent.class,
+        RepositoryComponent.class
     })
 
 @Singleton

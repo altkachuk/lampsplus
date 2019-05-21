@@ -2,9 +2,8 @@ package com.atproj.zugara.lampsplus.presenters;
 
 import android.content.Context;
 
-import com.atproj.zugara.lampsplus.fileloader.LocalFileLoader;
-import com.atproj.zugara.lampsplus.fileloader.FileLoaderListener;
-import com.atproj.zugara.lampsplus.fileloader.IFileLoader;
+import com.atproj.zugara.lampsplus.repository.BaseResponse;
+import com.atproj.zugara.lampsplus.repository.LampsplusRepository;
 import com.atproj.zugara.lampsplus.model.Folder;
 import com.atproj.zugara.lampsplus.model.Item;
 import com.atproj.zugara.lampsplus.views.LampsView;
@@ -12,67 +11,118 @@ import com.atproj.zugara.lampsplus.views.LampsView;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 /**
  * Created by andre on 15-Dec-18.
  */
 
 public class LampsPresenter extends BasePresenter {
 
-    private LampsView lampsView;
-    private IFileLoader fileLoader;
+    @Inject
+    LampsplusRepository repository;
 
-    private Folder rootFolder;
-    private Folder currentFolder;
+    private LampsView lampsView;
+    private Item currentParent;
+    private List<Item> currentItems;
 
     public LampsPresenter(Context context, LampsView lampsView) {
         super(context);
 
         this.lampsView = lampsView;
-        this.fileLoader = fileLoader;
 
-        fileLoader = new LocalFileLoader();
-        fileLoader.addListener(new FileLoaderListener() {
+
+        repository.getRootChildren(new BaseResponse<List<Item>>() {
             @Override
-            public void onComplete(Folder root) {
-                rootFolder = root;
-                currentFolder = rootFolder;
-                update(currentFolder);
+            public void onComplete(List<Item> items) {
+                currentParent = null;
+                currentItems = items;
+                updateItems();
+                updateBreadcrumps();
             }
 
             @Override
-            public void onProductListError() {
+            public void onError(Exception e) {
 
             }
         });
-        fileLoader.load();
     }
 
-    private void update(Folder folder) {
-        List<String> breadcrumps = new ArrayList<>();
-        Item item = folder;
-        while (item.getParent() != null) {
-            breadcrumps.add(0, item.getName());
-            item = item.getParent();
-        }
-        breadcrumps.add(0, rootFolder.getName());
+    private void updateItems() {
+        lampsView.setDataProvider(currentItems);
+    }
 
-        lampsView.enableBackButton(breadcrumps.size() > 1);
+    private void updateBreadcrumps() {
+        List<String> breadcrumps = new ArrayList<>();
+        if (currentParent != null) {
+            breadcrumps.add(currentParent.getName());
+            Item item = currentParent;
+            while (item.getParent() != null) {
+                breadcrumps.add(0, item.getName());
+                item = item.getParent();
+            }
+        }
+
+        breadcrumps.add(0, "BESTLIGHT4U");
         lampsView.setBreadcrumps(breadcrumps);
-        lampsView.setDataProvider(folder.getChildren());
     }
 
     public void back() {
-        if (currentFolder.getParent() != null) {
-            currentFolder = (Folder) currentFolder.getParent();
-            update(currentFolder);
+        if (currentParent == null) {
+            return;
+        }
+        if (currentParent.getParent() == null) {
+            repository.getRootChildren(new BaseResponse<List<Item>>() {
+                @Override
+                public void onComplete(List<Item> items) {
+                    currentParent = null;
+                    currentItems = items;
+                    updateItems();
+                    updateBreadcrumps();
+                }
+
+                @Override
+                public void onError(Exception e) {
+
+                }
+            });
+        } else  {
+            repository.getChildren(currentParent.getParent(), new BaseResponse<List<Item>>() {
+                @Override
+                public void onComplete(List<Item> items) {
+                    currentParent = currentParent.getParent();
+                    currentItems = items;
+                    updateItems();
+                    updateBreadcrumps();
+                }
+
+                @Override
+                public void onError(Exception e) {
+
+                }
+            });
         }
     }
 
-    public void selectFile(int position) {
-        if (!(currentFolder.getChildAt(position) instanceof Folder)) return;
+    public void selectItem(int position) {
+        final Item selectedItem = currentItems.get(position);
+        if (!(selectedItem instanceof Folder)) {
+            return;
+        }
 
-        Folder folder = (Folder) currentFolder.getChildAt(position);
-        currentFolder = folder;
-        update(currentFolder);
+        repository.getChildren(currentItems.get(position), new BaseResponse<List<Item>>() {
+            @Override
+            public void onComplete(List<Item> items) {
+                currentParent = selectedItem;
+                currentItems = items;
+                updateItems();
+                updateBreadcrumps();
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
     }
 }

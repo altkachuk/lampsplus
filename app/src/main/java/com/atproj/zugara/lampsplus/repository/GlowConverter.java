@@ -1,4 +1,4 @@
-package com.atproj.zugara.lampsplus.fileloader;
+package com.atproj.zugara.lampsplus.repository;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

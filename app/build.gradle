@@ -43,7 +43,7 @@ android {
         bestlight4u {
             applicationId = "com.atproj.zugara.lampsplus.bestlight4u"
             resValue "string", "app_name", "BESTLIGHT4U"
-
+            buildConfigField "String", "STATE", '\"{\\"pp\\" : \\"local\\",\\"release\\": \\"local\\",\\"debug\\":\\"local\\"}\"'
             buildConfigField 'String', 'HOST', '\"{\\"pp\\" : \\"http://somehost.com/\\",\\"release\\": \\"http://somehost.com/\\",\\"debug\\":\\"http://somehost.com/\\"}\"'
             dimension "default"
         }
